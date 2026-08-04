@@ -1,10 +1,12 @@
 PyYAML==6.0.3
+huggingface_hub>=0.26
 matplotlib==3.11.1
 numpy==2.5.1
 opencv-python==5.0.0.93
 openpyxl==3.1.5
 pillow==12.3.0
 pytest==9.1.1
+streamlit>=1.40
 torch==2.13.0
 torchvision==0.28.0
 ultralytics-thop==2.1.6

@@ -30,3 +30,13 @@ ICLOUD_QOLGAN_FAYLLAR.txt.gz
 
 # Ichki ishchi hujjat — ochiq repoga emas
 HANDOFF.md
+
+# Ichki hujjatlar
+VIDEO_YOLLANMA.md
+PLAN.md
+RECOVERED_transkriptdan/
+DATA/kaggle_restore/
+Baxodir.xlsx
+*.pdf
+LABEL_TASK/
+*.bak-*

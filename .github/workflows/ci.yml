@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      # The PCI engine, the geometry and the tiling are pure Python and numpy.
+      # Torch is a ~2 GB download and only the detector needs it, so CI installs
+      # the light half and skips the tests that ask for a model.
+      - name: Install
+        run: pip install numpy pillow openpyxl pyyaml pytest
+
+      - name: Test
+        run: pytest tests -q
