@@ -1,0 +1,18 @@
+START yolo11m_1024  yolo11m.pt @ 1024 batch 24 -> /workspace/yolo11m_1024.log
+END   yolo11m_1024  rc=0  989.5 min
+START yolo11l_640  yolo11l.pt @ 640 batch 32 -> /workspace/yolo11l_640.log
+END   yolo11l_640  rc=0  1071.4 min
+{
+  "yolo11m_1024": {
+    "returncode": 0,
+    "weights": "/workspace/runs/yolo11m_1024/weights/best.pt",
+    "imgsz": 1024,
+    "batch": 24
+  },
+  "yolo11l_640": {
+    "returncode": 0,
+    "weights": "/workspace/runs/yolo11l_640/weights/best.pt",
+    "imgsz": 640,
+    "batch": 32
+  }
+}

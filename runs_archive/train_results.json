@@ -1,0 +1,14 @@
+{
+  "yolo11m_1024": {
+    "returncode": 0,
+    "weights": "/workspace/runs/yolo11m_1024/weights/best.pt",
+    "imgsz": 1024,
+    "batch": 24
+  },
+  "yolo11l_640": {
+    "returncode": 0,
+    "weights": "/workspace/runs/yolo11l_640/weights/best.pt",
+    "imgsz": 640,
+    "batch": 32
+  }
+}

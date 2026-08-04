@@ -1,0 +1,32 @@
+# Kredensiallar — hech qachon loyiha ichida saqlanmasin
+kaggle.json
+*.pem
+*.key
+.env
+
+# Qayta yaratiladigan
+.venv/
+__pycache__/
+.pytest_cache/
+.DS_Store
+build/
+DATA/yolo/
+DATA/kaggle_restore/
+
+# Katta ma'lumotlar — GitHub uchun emas
+DATA/raw/
+DATA/reference/
+SURVEY/
+LABEL_TASK/block_crack/images/
+LABEL_TASK/professor/varaq_*.jpg
+models/*.pt
+runs_archive/*/weights/
+*.log.gz
+ICLOUD_QOLGAN_FAYLLAR.txt.gz
+*.7z
+*.MOV
+*.mov
+*.mp4
+
+# Ichki ishchi hujjat — ochiq repoga emas
+HANDOFF.md

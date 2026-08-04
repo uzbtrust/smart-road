@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Smart Road - o'qitish natijalari</title>
+</head>
+<body>
+<style>
+/* Declared on :root, not on .viz-root. body sits *above* .viz-root, and custom
+   properties only inherit downwards -- scoping them to the wrapper left
+   body{color:var(--text-primary)} resolving to nothing, so every heading that
+   inherited from body came out near-black on the dark surface. */
+:root{color-scheme:light;--surface-1:#ffffff;--plane:#f4f4f1;--text-primary:#0b0b0b;
+--text-secondary:#52514e;--muted:#8a8880;--grid:#e6e5df;--baseline:#c3c2b7;
+--border:rgba(11,11,11,.09);--s0:#2a78d6;--s1:#eb6834;--track:#edece7;--warn:#ec835a;
+--shadow:0 1px 2px rgba(11,11,11,.04),0 8px 24px rgba(11,11,11,.05)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){
+color-scheme:dark;--surface-1:#1a1a19;--plane:#0d0d0d;--text-primary:#f7f7f4;
+--text-secondary:#c3c2b7;--muted:#8a8880;--grid:#2c2c2a;--baseline:#383835;
+--border:rgba(255,255,255,.10);--s0:#3987e5;--s1:#d95926;--track:#262625;--warn:#ec835a;
+--shadow:none}}
+:root[data-theme=dark]{color-scheme:dark;--surface-1:#1a1a19;--plane:#0d0d0d;
+--text-primary:#f7f7f4;--text-secondary:#c3c2b7;--muted:#8a8880;--grid:#2c2c2a;
+--baseline:#383835;--border:rgba(255,255,255,.10);--s0:#3987e5;--s1:#d95926;
+--track:#262625;--warn:#ec835a;--shadow:none}
+*{box-sizing:border-box}
+body{margin:0;background:var(--plane);color:var(--text-primary);
+-webkit-font-smoothing:antialiased;
+font:15px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+.viz-root{max-width:940px;margin:0 auto;padding:56px 20px 80px;color:var(--text-primary)}
+header{margin-bottom:36px}
+h1{font-size:32px;line-height:1.15;margin:0 0 10px;letter-spacing:-.025em;
+color:var(--text-primary);font-weight:640}
+.lede{color:var(--text-secondary);margin:0;font-size:16px;max-width:64ch}
+.meta{color:var(--muted);font-size:13px;margin-top:10px}
+section{background:var(--surface-1);border:1px solid var(--border);border-radius:16px;
+padding:26px 28px;margin:18px 0;box-shadow:var(--shadow)}
+h2{font-size:17px;margin:0 0 4px;letter-spacing:-.012em;color:var(--text-primary);
+font-weight:620}
+.note{color:var(--text-secondary);font-size:14px;margin:0 0 18px;max-width:70ch}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:0}
+.tile{background:var(--surface-1);border:1px solid var(--border);border-radius:14px;
+padding:18px 20px;box-shadow:var(--shadow)}
+.tile-label{color:var(--text-secondary);font-size:12.5px;letter-spacing:.02em}
+.tile-value{font-size:32px;line-height:1.1;margin:8px 0 3px;letter-spacing:-.025em;
+color:var(--text-primary);font-weight:600}
+.tile-sub{color:var(--muted);font-size:12px}
+.chart{width:100%;height:auto;display:block;overflow:visible}
+.cat{fill:var(--text-primary);font-size:13.5px}
+.sub{fill:var(--muted);font-size:11px}
+.val{fill:var(--text-secondary);font-size:12.5px;font-variant-numeric:tabular-nums}
+.track{fill:var(--track)}
+.bar{fill:var(--s0)}
+.bar.weak{fill:var(--warn)}
+.row:hover .bar,.row:focus .bar{opacity:.82}
+.row:focus{outline:none}
+.row:focus .cat{text-decoration:underline}
+.grid{stroke:var(--grid);stroke-width:1}
+.tick{fill:var(--muted);font-size:11px;font-variant-numeric:tabular-nums}
+.axis-title{fill:var(--muted);font-size:11.5px}
+.line{stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.line.s0,.dot.s0{stroke:var(--s0)}.dot.s0{fill:var(--s0)}
+.line.s1,.dot.s1{stroke:var(--s1)}.dot.s1{fill:var(--s1)}
+.dot{stroke-width:2;stroke:var(--surface-1)}
+.endlabel{font-size:12px;fill:var(--text-secondary)}
+.legend{display:flex;gap:18px;flex-wrap:wrap;margin:0 0 14px;font-size:13px;
+color:var(--text-secondary)}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.swatch{width:11px;height:11px;border-radius:3px;display:inline-block}
+.wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:620px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--border)}
+th{color:var(--text-secondary);font-weight:600;font-size:12.5px}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+.callout{border-left:3px solid var(--warn);padding:14px 18px;background:var(--surface-1);
+border-radius:0 10px 10px 0;margin:18px 0 0}
+.callout h3{margin:0 0 6px;font-size:14.5px}
+.callout p{margin:8px 0 0;color:var(--text-secondary);font-size:14px}
+.callout ul{margin:0;padding-left:20px;color:var(--text-secondary);font-size:14px}
+.callout li{margin:4px 0}
+.empty{color:var(--muted)}
+footer{color:var(--muted);font-size:12.5px;margin-top:28px;text-align:center}
+</style>
+<div class="viz-root">
+<header>
+  <h1>Yo'l qoplamasi nuqsonlarini aniqlash — o'qitish natijalari</h1>
+  <p class="lede">ASTM D6433 taksonomiyasiga keltirilgan 4 mamlakat ma'lumotlari asosida
+  o'qitilgan detektor. Aniqlangan nuqsonlar keyingi bosqichda Pavement Condition Index (PCI)
+  hisobiga kirish sifatida ishlatiladi.</p>
+  <p class="meta">2026-08-04 · vast.ai, RTX 5090 32 GB · 103,968 o'quv annotatsiyasi · 3,550 tekshiruv rasmi</p>
+</header>
+
+<div class="tiles"><div class="tile"><div class="tile-label">mAP<sub>50</sub></div><div class="tile-value">0.657</div><div class="tile-sub">eng yaxshi model: yolo11l_640</div></div><div class="tile"><div class="tile-label">mAP<sub>50-95</sub></div><div class="tile-value">0.401</div><div class="tile-sub">qat&#x27;iyroq mezon</div></div><div class="tile"><div class="tile-label">Aniqlik / To'liqlik</div><div class="tile-value">0.68 / 0.60</div><div class="tile-sub">precision / recall</div></div><div class="tile"><div class="tile-label">Annotatsiyalar</div><div class="tile-value">103,968</div><div class="tile-sub">3,550 ta tekshiruv rasmi</div></div></div>
+
+<section>
+  <h2>Nuqson turlari bo'yicha aniqlik</h2>
+  <p class="note">mAP<sub>50</sub> — modelning har bir nuqson turini qanchalik ishonchli
+  topishi. Har bir qator yonida ASTM D6433 dagi nuqson raqami va o'quv annotatsiyalari soni
+  ko'rsatilgan.</p>
+  <svg viewBox="0 0 860 382" role="img" aria-label="Har bir nuqson turi uchun mAP50" class="chart"><g class="row" tabindex="0"><title>Yamoq va quduq kesimi — mAP50 0.783, mAP50-95 0.564, aniqlik 0.756, to'liqlik 0.728; 7719 ta o'quv annotatsiyasi</title><text x="238" y="18.0" class="cat" text-anchor="end" dominant-baseline="middle">Yamoq va quduq kesimi</text><text x="238" y="31.0" class="sub" text-anchor="end" dominant-baseline="middle">ASTM 11 · 7,719 annotatsiya</text><rect x="250" y="6" width="540" height="22" class="track" rx="4"/><rect x="250" y="6" width="422.8" height="22" class="bar" rx="4"/><text x="682.8" y="17.0" class="val" dominant-baseline="middle">0.783</text></g><g class="row" tabindex="0"><title>Yo&#x27;l belgisi / quduq — mAP50 0.781, mAP50-95 0.501, aniqlik 0.741, to'liqlik 0.752; 17334 ta o'quv annotatsiyasi</title><text x="238" y="62.0" class="cat" text-anchor="end" dominant-baseline="middle">Yo&#x27;l belgisi / quduq</text><text x="238" y="75.0" class="sub" text-anchor="end" dominant-baseline="middle">PCI&#x27;ga kirmaydi · 17,334 annotatsiya</text><rect x="250" y="50" width="540" height="22" class="track" rx="4"/><rect x="250" y="50" width="421.7" height="22" class="bar" rx="4"/><text x="681.7" y="61.0" class="val" dominant-baseline="middle">0.781</text></g><g class="row" tabindex="0"><title>Chekka pasayishi — mAP50 0.731, mAP50-95 0.319, aniqlik 0.633, to'liqlik 0.579; 308 ta o'quv annotatsiyasi</title><text x="238" y="106.0" class="cat" text-anchor="end" dominant-baseline="middle">Chekka pasayishi</text><text x="238" y="119.0" class="sub" text-anchor="end" dominant-baseline="middle">ASTM 9 · 308 annotatsiya</text><rect x="250" y="94" width="540" height="22" class="track" rx="4"/><rect x="250" y="94" width="394.7" height="22" class="bar weak" rx="4"/><text x="654.7" y="105.0" class="val" dominant-baseline="middle">0.731</text></g><g class="row" tabindex="0"><title>To&#x27;rsimon (charchoq) yoriq — mAP50 0.672, mAP50-95 0.388, aniqlik 0.653, to'liqlik 0.652; 16056 ta o'quv annotatsiyasi</title><text x="238" y="150.0" class="cat" text-anchor="end" dominant-baseline="middle">To&#x27;rsimon (charchoq) yoriq</text><text x="238" y="163.0" class="sub" text-anchor="end" dominant-baseline="middle">ASTM 1 · 16,056 annotatsiya</text><rect x="250" y="138" width="540" height="22" class="track" rx="4"/><rect x="250" y="138" width="362.9" height="22" class="bar" rx="4"/><text x="622.9" y="149.0" class="val" dominant-baseline="middle">0.672</text></g><g class="row" tabindex="0"><title>Bo&#x27;ylama va ko&#x27;ndalang yoriq — mAP50 0.637, mAP50-95 0.364, aniqlik 0.653, to'liqlik 0.615; 53293 ta o'quv annotatsiyasi</title><text x="238" y="194.0" class="cat" text-anchor="end" dominant-baseline="middle">Bo&#x27;ylama va ko&#x27;ndalang yoriq</text><text x="238" y="207.0" class="sub" text-anchor="end" dominant-baseline="middle">ASTM 10 · 53,293 annotatsiya</text><rect x="250" y="182" width="540" height="22" class="track" rx="4"/><rect x="250" y="182" width="344.0" height="22" class="bar" rx="4"/><text x="604.0" y="193.0" class="val" dominant-baseline="middle">0.637</text></g><g class="row" tabindex="0"><title>Yemirilish / tishlashish — mAP50 0.602, mAP50-95 0.325, aniqlik 0.791, to'liqlik 0.503; 1805 ta o'quv annotatsiyasi</title><text x="238" y="238.0" class="cat" text-anchor="end" dominant-baseline="middle">Yemirilish / tishlashish</text><text x="238" y="251.0" class="sub" text-anchor="end" dominant-baseline="middle">ASTM 19 · 1,805 annotatsiya</text><rect x="250" y="226" width="540" height="22" class="track" rx="4"/><rect x="250" y="226" width="325.1" height="22" class="bar" rx="4"/><text x="585.1" y="237.0" class="val" dominant-baseline="middle">0.602</text></g><g class="row" tabindex="0"><title>Chuqurcha — mAP50 0.549, mAP50-95 0.248, aniqlik 0.618, to'liqlik 0.506; 7394 ta o'quv annotatsiyasi</title><text x="238" y="282.0" class="cat" text-anchor="end" dominant-baseline="middle">Chuqurcha</text><text x="238" y="295.0" class="sub" text-anchor="end" dominant-baseline="middle">ASTM 13 · 7,394 annotatsiya</text><rect x="250" y="270" width="540" height="22" class="track" rx="4"/><rect x="250" y="270" width="296.5" height="22" class="bar" rx="4"/><text x="556.5" y="281.0" class="val" dominant-baseline="middle">0.549</text></g><g class="row" tabindex="0"><title>Bloksimon yoriq — mAP50 0.502, mAP50-95 0.502, aniqlik 0.608, to'liqlik 0.500; 59 ta o'quv annotatsiyasi</title><text x="238" y="326.0" class="cat" text-anchor="end" dominant-baseline="middle">Bloksimon yoriq</text><text x="238" y="339.0" class="sub" text-anchor="end" dominant-baseline="middle">ASTM 3 · 59 annotatsiya</text><rect x="250" y="314" width="540" height="22" class="track" rx="4"/><rect x="250" y="314" width="271.1" height="22" class="bar weak" rx="4"/><text x="531.1" y="325.0" class="val" dominant-baseline="middle">0.502</text></g></svg>
+  <div class="callout"><h3>⚠ Ishonch bilan ishlatib bo'lmaydigan klasslar</h3><ul><li><b>Bloksimon yoriq</b> — atigi 59 ta o&#x27;quv annotatsiyasi — natija ishonchli emas</li><li><b>Chekka pasayishi</b> — atigi 308 ta o&#x27;quv annotatsiyasi — natija ishonchli emas</li></ul><p>Bularning hammasi ma'lumot cheklovi, model kamchiligi emas. Diagrammada kam ma'lumotlilari boshqa rangda.</p></div>
+</section>
+
+<section>
+  <h2>O'qitish jarayoni</h2>
+  <p class="note">Ikkala model bitta RTX 5090 da ketma-ket o'qitildi. Har ikkalasi ham
+  150 epochga qo'yilgan edi, lekin <code>patience=30</code> bo'yicha erta to'xtadi:
+  yolo11l_640 — 143 epoch (eng yaxshisi 113), yolo11m_1024 — 61 epoch (eng yaxshisi 31).</p>
+  <div class="legend"><span><i class="swatch" style="background:var(--s0)"></i>yolo11l_640</span><span><i class="swatch" style="background:var(--s1)"></i>yolo11m_1024</span></div>
+  <svg viewBox="0 0 860 300" role="img" aria-label="mAP50 epoch bo&#x27;yicha" class="chart"><line x1="52" x2="730" y1="266.0" y2="266.0" class="grid"/><text x="42" y="266.0" class="tick" text-anchor="end" dominant-baseline="middle">0.00</text><line x1="52" x2="730" y1="204.0" y2="204.0" class="grid"/><text x="42" y="204.0" class="tick" text-anchor="end" dominant-baseline="middle">0.19</text><line x1="52" x2="730" y1="142.0" y2="142.0" class="grid"/><text x="42" y="142.0" class="tick" text-anchor="end" dominant-baseline="middle">0.38</text><line x1="52" x2="730" y1="80.0" y2="80.0" class="grid"/><text x="42" y="80.0" class="tick" text-anchor="end" dominant-baseline="middle">0.57</text><line x1="52" x2="730" y1="18.0" y2="18.0" class="grid"/><text x="42" y="18.0" class="tick" text-anchor="end" dominant-baseline="middle">0.76</text><text x="52.0" y="286" class="tick" text-anchor="middle">1</text><text x="133.2" y="286" class="tick" text-anchor="middle">18</text><text x="214.3" y="286" class="tick" text-anchor="middle">35</text><text x="295.5" y="286" class="tick" text-anchor="middle">52</text><text x="376.7" y="286" class="tick" text-anchor="middle">69</text><text x="457.8" y="286" class="tick" text-anchor="middle">86</text><text x="539.0" y="286" class="tick" text-anchor="middle">103</text><text x="620.2" y="286" class="tick" text-anchor="middle">120</text><text x="701.4" y="286" class="tick" text-anchor="middle">137</text><text x="391.0" y="298" class="axis-title" text-anchor="middle">epoch</text><polyline points="52.0,258.5 56.8,216.3 61.5,205.3 66.3,180.2 71.1,177.1 75.9,170.3 80.6,155.6 85.4,153.2 90.2,148.5 95.0,146.1 99.7,139.5 104.5,135.0 109.3,131.7 114.1,133.4 118.8,129.2 123.6,128.5 128.4,128.1 133.2,122.5 137.9,123.0 142.7,119.6 147.5,118.1 152.3,114.9 157.0,111.7 161.8,112.3 166.6,109.8 171.4,110.7 176.1,106.3 180.9,102.4 185.7,101.2 190.5,99.9 195.2,100.1 200.0,98.4 204.8,99.2 209.6,99.9 214.3,103.0 219.1,102.7 223.9,102.3 228.7,101.7 233.4,102.1 238.2,101.5 243.0,100.6 247.8,99.9 252.5,95.0 257.3,94.0 262.1,93.3 266.9,95.5 271.6,94.9 276.4,93.3 281.2,93.1 286.0,88.3 290.7,87.3 295.5,76.2 300.3,74.8 305.1,74.1 309.8,73.4 314.6,72.8 319.4,71.9 324.2,71.9 328.9,70.2 333.7,69.2 338.5,68.1 343.3,67.6 348.0,67.0 352.8,66.4 357.6,65.8 362.4,64.8 367.1,64.0 371.9,64.0 376.7,62.9 381.5,62.3 386.2,61.1 391.0,60.5 395.8,59.4 400.5,58.5 405.3,58.1 410.1,57.6 414.9,56.8 419.6,56.6 424.4,56.3 429.2,55.9 434.0,55.7 438.7,55.9 443.5,55.3 448.3,55.1 453.1,54.8 457.8,54.4 462.6,54.5 467.4,53.7 472.2,53.5 476.9,53.2 481.7,53.0 486.5,52.9 491.3,52.9 496.0,52.9 500.8,52.6 505.6,53.0 510.4,53.2 515.1,53.0 519.9,52.4 524.7,51.9 529.5,52.3 534.2,52.5 539.0,52.8 543.8,52.3 548.6,52.4 553.3,52.4 558.1,53.8 562.9,54.2 567.7,52.7 572.4,52.3 577.2,52.6 582.0,52.4 586.8,50.6 591.5,50.7 596.3,50.7 601.1,50.8 605.9,50.9 610.6,50.9 615.4,50.7 620.2,50.7 625.0,50.5 629.7,50.3 634.5,50.5 639.3,50.7 644.1,50.8 648.8,50.6 653.6,50.7 658.4,51.5 663.2,51.3 667.9,51.5 672.7,51.4 677.5,51.3 682.3,51.2 687.0,51.3 691.8,51.2 696.6,51.1 701.4,51.2 706.1,51.3 710.9,51.2 715.7,51.5 720.5,51.7 725.2,51.8 730.0,51.9" class="line s0" fill="none"/><circle cx="730.0" cy="51.9" r="5" class="dot s0"/><text x="742.0" y="51.9" class="endlabel s0" dominant-baseline="middle">yolo11l_640 · 0.653</text><polyline points="52.0,216.0 56.8,211.2 61.5,190.4 66.3,178.4 71.1,165.9 75.9,162.5 80.6,150.2 85.4,140.1 90.2,138.9 95.0,135.0 99.7,130.0 104.5,123.2 109.3,114.5 114.1,118.6 118.8,113.1 123.6,111.9 128.4,110.4 133.2,108.1 137.9,103.1 142.7,101.2 147.5,98.4 152.3,96.6 157.0,96.9 161.8,96.2 166.6,94.6 171.4,92.4 176.1,94.0 180.9,92.9 185.7,90.2 190.5,91.0 195.2,87.7 200.0,87.8 204.8,87.7 209.6,91.1 214.3,90.2 219.1,87.7 223.9,89.1 228.7,91.8 233.4,94.2 238.2,96.0 243.0,98.8 247.8,101.0 252.5,103.2 257.3,107.7 262.1,106.7 266.9,103.8 271.6,104.2 276.4,104.3 281.2,124.8 286.0,124.2 290.7,123.7 295.5,122.9 300.3,122.2 305.1,111.6 309.8,110.7 314.6,109.9 319.4,109.8 324.2,108.8 328.9,108.5 333.7,107.8 338.5,107.3" class="line s1" fill="none"/><circle cx="338.5" cy="107.3" r="5" class="dot s1"/><text x="350.5" y="107.3" class="endlabel s1" dominant-baseline="middle">yolo11m_1024 · 0.484</text></svg>
+</section>
+
+<section>
+  <h2>To'liq jadval</h2>
+  <div class="wrap"><table><tr><th>Nuqson</th><th>ASTM</th><th class='n'>Annotatsiya</th><th class='n'>mAP50</th><th class='n'>mAP50-95</th><th class='n'>Aniqlik</th><th class='n'>To'liqlik</th></tr><tr><td>Yamoq va quduq kesimi</td><td>11</td><td class='n'>7,719</td><td class='n'>0.783</td><td class='n'>0.564</td><td class='n'>0.756</td><td class='n'>0.728</td></tr><tr><td>Yo&#x27;l belgisi / quduq</td><td>—</td><td class='n'>17,334</td><td class='n'>0.781</td><td class='n'>0.501</td><td class='n'>0.741</td><td class='n'>0.752</td></tr><tr><td>Chekka pasayishi</td><td>9</td><td class='n'>308</td><td class='n'>0.731</td><td class='n'>0.319</td><td class='n'>0.633</td><td class='n'>0.579</td></tr><tr><td>To&#x27;rsimon (charchoq) yoriq</td><td>1</td><td class='n'>16,056</td><td class='n'>0.672</td><td class='n'>0.388</td><td class='n'>0.653</td><td class='n'>0.652</td></tr><tr><td>Bo&#x27;ylama va ko&#x27;ndalang yoriq</td><td>10</td><td class='n'>53,293</td><td class='n'>0.637</td><td class='n'>0.364</td><td class='n'>0.653</td><td class='n'>0.615</td></tr><tr><td>Yemirilish / tishlashish</td><td>19</td><td class='n'>1,805</td><td class='n'>0.602</td><td class='n'>0.325</td><td class='n'>0.791</td><td class='n'>0.503</td></tr><tr><td>Chuqurcha</td><td>13</td><td class='n'>7,394</td><td class='n'>0.549</td><td class='n'>0.248</td><td class='n'>0.618</td><td class='n'>0.506</td></tr><tr><td>Bloksimon yoriq</td><td>3</td><td class='n'>59</td><td class='n'>0.502</td><td class='n'>0.502</td><td class='n'>0.608</td><td class='n'>0.500</td></tr></table></div>
+</section>
+
+<footer>Smart Road · ASTM D6433 Pavement Condition Index</footer>
+</div>
+</body>
+</html>

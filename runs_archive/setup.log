@@ -1,0 +1,20 @@
+=== torch / sm_120 ===
+torch 2.12.0+cu130 | cuda 13.0 | NVIDIA GeForce RTX 5090 sm_120
+built for: ['sm_75', 'sm_80', 'sm_86', 'sm_90', 'sm_100', 'sm_120']
+matmul OK
+=== deps ===
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+ultralytics 8.3.155 requires opencv-python>=4.6.0, which is not installed.
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+Creating new Ultralytics Settings v0.0.6 file ✅ 
+View Ultralytics Settings with 'yolo settings' or at '/root/.config/Ultralytics/settings.json'
+Update Settings with 'yolo settings key=value', i.e. 'yolo settings runs_dir=path/to/dir'. For help see https://docs.ultralytics.com/quickstart/#ultralytics-settings.
+ultralytics 8.3.155 | torch 2.12.0+cu130
+=== dataset ===
+Dataset URL: https://www.kaggle.com/datasets/uzbtrust/smartroad-yolo
+License(s): CC-BY-SA-4.0
+data.yaml
+images
+labels
+train_detector.py

@@ -1,0 +1,16 @@
+{
+  "id": "uzbtrust/smart-road-distress-detector-2x-t4",
+  "title": "Smart Road distress detector 2x T4",
+  "code_file": "run.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "machine_shape": "NvidiaTeslaT4",
+  "enable_internet": true,
+  "dataset_sources": ["uzbtrust/smartroad-yolo", "uzbtrust/smartroad-code"],
+  "competition_sources": [],
+  "kernel_sources": [],
+  "model_sources": []
+}

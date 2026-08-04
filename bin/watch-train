@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Live view of the vast.ai training run.
+#
+#   ./bin/watch-train              the job currently running
+#   ./bin/watch-train 640          the yolo11l @ 640 job
+#   ./bin/watch-train 1024         the yolo11m @ 1024 job
+#   ./bin/watch-train gpu          GPU utilisation, refreshed
+#   ./bin/watch-train all 640      unfiltered log
+# The box is rented per run; point these at it first, e.g.
+#   export SMARTROAD_HOST=root@1.2.3.4 SMARTROAD_PORT=12345
+HOST="${SMARTROAD_HOST:?set SMARTROAD_HOST, e.g. root@1.2.3.4}"
+PORT="${SMARTROAD_PORT:-22}"
+KEY="${SMARTROAD_SSH_KEY:-$HOME/.ssh/id_ed25519_vast}"
+SSH="ssh -p $PORT -i $KEY -o BatchMode=yes $HOST"
+
+raw=""; sel="$1"
+[ "$1" = "all" ] && { raw="yes"; sel="$2"; }
+
+case "$sel" in
+  gpu) $SSH 'watch -n2 "nvidia-smi --query-gpu=utilization.gpu,memory.used,temperature.gpu --format=csv"'; exit ;;
+  640)  LOG=/workspace/yolo11l_640.log ;;
+  1024) LOG=/workspace/yolo11m_1024.log ;;
+  *)    # whichever log was written to most recently
+        LOG=$($SSH 'ls -t /workspace/yolo11*_*.log 2>/dev/null | head -1') ;;
+esac
+
+echo "watching $LOG  (ctrl-C to stop)" >&2
+if [ -n "$raw" ]; then
+  $SSH "tail -f $LOG" | tr '\r' '\n'
+else
+  # Ultralytics redraws its progress bar with \r; split on it and keep only the
+  # epoch lines and the per-class validation table.
+  $SSH "tail -f -n 300 $LOG" | tr '\r' '\n' \
+    | grep -E "^ +[0-9]+/[0-9]+ |mAP50|^ +Class|^ +all |^[a-z_]+ +[0-9]+ +[0-9]+ |Closing dataloader|EarlyStopping|Results saved"
+fi

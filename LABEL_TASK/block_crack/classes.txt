@@ -1,0 +1,8 @@
+longitudinal_transverse_crack
+alligator_crack
+block_crack
+patching
+pothole
+weathering_raveling
+lane_shoulder_drop_off
+marking_manhole

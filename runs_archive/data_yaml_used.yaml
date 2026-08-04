@@ -1,0 +1,15 @@
+path: /workspace/data
+train: images/train
+val: images/val
+nc: 10
+names:
+  0: longitudinal_transverse_crack
+  1: alligator_crack
+  2: block_crack
+  3: patching
+  4: pothole
+  5: weathering_raveling
+  6: lane_shoulder_drop_off
+  7: marking_manhole
+  8: edge_crack
+  9: bumps_and_sags
