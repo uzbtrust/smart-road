@@ -36,8 +36,14 @@ Jacobian is worth stating because it explains the accuracy limit:
 
 Substituting scale = height_m / dy leaves `pixel area = height_m^2 / (dy^3 f^2)`,
 so measured area goes with the *square* of the assumed camera height: a 10 %
-error in the tape measurement is a 21 % error in every square metre reported,
-and therefore in the density that ASTM turns into a deduct value.
+error in the tape measurement is a 21 % error in every square metre reported.
+
+That error does not simply cancel when the area becomes a density. The inspected
+surface grows with height as well, but not in step: it is a fixed *ground* band
+(`near_m` to `far_m`) whose width scales with height while its depth is held
+constant, so the ratio still moves. Measured on a fixed detection box, raising
+the assumed height from 1.95 m to 2.60 m took an area density from 7.6 % to
+13.3 %. Height deserves a tape measure, not an estimate.
 
 Area grows with the *cube* of the distance coefficient. Doubling how far away a
 pixel lies multiplies the ground area it stands for by eight, so far-field

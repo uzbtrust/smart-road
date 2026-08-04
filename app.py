@@ -12,6 +12,7 @@ live: the expensive half of the pipeline does not depend on them.
 from __future__ import annotations
 
 import io
+import time
 import tempfile
 from pathlib import Path
 
@@ -72,8 +73,10 @@ What this figure is **not**:
   units, which needs frame-to-frame deduplication.
 - **Severity-aware.** Every detection is graded `{sev}` because the model does
   not predict severity.
-- **Insensitive to camera height.** Ground area goes as height², so a 10 % error
-  in the {h:.2f} m becomes a 21 % error in every density.
+- **Insensitive to camera height.** Both the distress and the surface grow with
+  the {h:.2f} m, but not in step — the measured band is a fixed ground depth — so
+  they do not cancel. Measured: 1.95 m to 2.60 m took an area density from 7.6 %
+  to 13.3 %.
 
 `Marking / manhole` is detected but never graded — markings and manhole covers
 are not pavement distresses. They are in the class list because they are what a
@@ -253,6 +256,35 @@ def breakdown(result, dets) -> None:
                 unsafe_allow_html=True)
 
 
+def severity_row(scores: dict[str, float], chosen: str) -> None:
+    """PCI at all three ASTM severities, with the selected one marked.
+
+    The detector cannot tell low from high, so a single number would imply a
+    precision the input does not have. Showing the whole range makes the size of
+    that uncertainty part of the answer instead of a footnote.
+    """
+    cells = []
+    for sev in ("low", "medium", "high"):
+        pci = scores[sev]
+        colour = band(pci)[1]
+        on = sev == chosen
+        cells.append(
+            f'<div style="flex:1;text-align:center;padding:.5rem .2rem;'
+            f'border-radius:9px;background:{colour};color:{ink_for(colour)};'
+            f'opacity:{1 if on else .38};'
+            f'outline:{"2px solid #fff" if on else "none"};outline-offset:1px">'
+            f'<div style="font-size:.62rem;letter-spacing:.1em;font-weight:700;'
+            f'text-transform:uppercase">{sev}</div>'
+            f'<div style="font-size:1.5rem;font-weight:800;line-height:1.1">'
+            f'{pci:.0f}</div></div>')
+    st.markdown('<div style="display:flex;gap:.4rem;margin:.2rem 0 .1rem 0">'
+                + "".join(cells) + "</div>", unsafe_allow_html=True)
+    st.markdown('<div class="sr-note">Same detections, graded at each ASTM '
+                'severity. The detector does not predict severity, so this is '
+                'the range the answer really occupies.</div>',
+                unsafe_allow_html=True)
+
+
 # ───────────────────────────────────────────────────────────────── header
 st.markdown('<div class="sr-title">Smart Road</div>', unsafe_allow_html=True)
 st.markdown('<div class="sr-sub">Road-surface distresses detected and graded through '
@@ -294,30 +326,46 @@ with st.sidebar:
         every_s = st.slider("Sample every (s)", 0.5, 5.0, 1.0, 0.5)
         max_frames = st.slider("Max frames", 4, 40, 15, 1)
 
+    st.markdown("### Distress severity")
+    severity = st.select_slider(
+        "ASTM severity applied to every detection",
+        ["low", "medium", "high"], value="medium",
+        help="ASTM grades each distress low, medium or high, and each has its "
+             "own deduct curve. The detector has no severity head, so one grade "
+             "is applied to everything — this is the largest genuine uncertainty "
+             "in the score.")
+
     st.markdown("### Detection")
-    conf = st.slider("Confidence", 0.05, 0.90, 0.25, 0.05)
+    conf = st.slider("Detection confidence", 0.05, 0.90, 0.25, 0.05,
+                     help="Minimum score a box needs to be counted.")
     tiled = st.toggle("Tiled inference", value=True,
                       help="Detect on overlapping 640 px tiles instead of resizing "
                            "the whole frame to 640. On a 4 K frame that resize is "
                            "6×, and a crack four pixels wide in training falls "
                            "below one pixel.")
-    overlap = st.slider("Tile overlap", 0.0, 0.5, 0.20, 0.05, disabled=not tiled)
+    overlap = st.slider("Tile overlap", 0.0, 0.5, 0.20, 0.05, disabled=not tiled,
+                        help="How much neighbouring tiles share. Without overlap "
+                             "a distress on a seam is seen only as fragments.")
     top = st.slider("Sky cut-off", 0.0, 0.90, 0.45, 0.05,
                     help="Fraction of frame height ignored as sky and horizon.")
 
-    st.markdown("### Camera")
-    st.caption("Ground area goes as height², so this is the largest single source "
-               "of error in the score. Changing it is instant — detection is cached.")
-    height_m = st.number_input("Height above road (m)", 0.5, 4.0, 1.95, 0.05)
-    focal_35 = st.number_input("Focal length, 35 mm equiv. (mm)", 10.0, 100.0, 25.0, 1.0)
-    horizon = st.slider("Horizon row", 0.0, 0.90, 0.139, 0.005)
-    far_m = st.slider("Measure out to (m)", 4.0, 25.0, 15.0, 1.0)
-
-    st.markdown("### ASTM severity")
-    severity = st.select_slider("Applied to every detection",
-                                ["low", "medium", "high"], value="medium")
-    st.caption("The detector has no severity head. Move this to see the range the "
-               "answer really occupies.")
+    st.markdown("### Camera geometry")
+    st.caption("These set the pixel-to-metre mapping. Changing them is instant — "
+               "detection is cached, only the ASTM arithmetic re-runs.")
+    height_m = st.number_input("Camera height above road (m)", 0.5, 4.0, 1.95, 0.05,
+                               help="A distress and the surface it sits on both "
+                                    "scale with height², so for area distresses "
+                                    "the two largely cancel in the density. It "
+                                    "bites hardest on cracks and potholes, whose "
+                                    "quantity is a length or a count.")
+    focal_35 = st.number_input("Focal length, 35 mm equivalent (mm)", 10.0, 100.0,
+                               25.0, 1.0, help="From the camera's EXIF. Wrong here "
+                                               "and every distance is wrong.")
+    horizon = st.slider("Horizon row (fraction of height)", 0.0, 0.90, 0.139, 0.005,
+                        help="Where the road plane vanishes. Sets the pitch.")
+    far_m = st.slider("Measure out to (m)", 4.0, 25.0, 15.0, 1.0,
+                      help="Beyond this a pixel stands for square metres of road, "
+                           "so detections there are ignored rather than measured.")
 
 if payload is None:
     st.info("Choose a sample or upload your own to begin.")
@@ -326,11 +374,12 @@ if payload is None:
 names = dict(load_model().names)
 
 
-def grade(frame_shape, dets):
+def grade(frame_shape, dets, sev: str | None = None):
     h, w = frame_shape
     cam = Camera.create(width=w, height=h, height_m=height_m,
                         focal_35mm=focal_35, horizon_row=horizon * h)
-    return pci_from_detections(dets, cam, severity=severity, class_names=names,
+    return pci_from_detections(dets, cam, severity=sev or severity,
+                               class_names=names,
                                roi=road_roi(w, h, top_fraction=top),
                                near_m=3.0, far_m=far_m)
 
@@ -370,6 +419,8 @@ if mode == "Photograph":
                                            sev=severity, h=height_m))
     with right:
         score_card(result)
+        severity_row({s: grade((h, w), dets, sev=s).pci
+                      for s in ("low", "medium", "high")}, severity)
         breakdown(result, dets)
         if result.excluded:
             st.markdown('<div class="sr-note">Excluded: '
@@ -403,18 +454,49 @@ else:
     worst = min(graded, key=lambda g: g[3].pci)
     mean = sum(scores) / len(scores)
 
-    st.markdown("#### Condition along the drive")
-    strip = "".join(
-        f'<div style="flex:1;background:{band(p)[1]};height:46px" '
-        f'title="{t:.1f}s — PCI {p:.0f} ({band(p)[1]})"></div>'
-        for (t, *_ , r), p in zip(graded, scores))
-    st.markdown(f'<div style="display:flex;gap:2px;border-radius:8px;overflow:hidden">'
-                f'{strip}</div>'
-                f'<div style="display:flex;justify-content:space-between;'
+    def strip_html(upto: int) -> str:
+        cells = "".join(
+            f'<div style="flex:1;background:{band(p)[1]};height:46px;'
+            f'opacity:{1 if i < upto else .12}" title="{t:.1f}s — PCI {p:.0f}"></div>'
+            for i, ((t, *_), p) in enumerate(zip(graded, scores)))
+        return (f'<div style="display:flex;gap:2px;border-radius:8px;overflow:hidden">'
+                f'{cells}</div><div style="display:flex;justify-content:space-between;'
                 f'font-size:.72rem;opacity:.55;margin-top:.3rem">'
-                f'<span>0 s</span><span>{graded[-1][0]:.0f} s</span></div>',
-                unsafe_allow_html=True)
-    st.line_chart({"PCI": scores}, height=190)
+                f'<span>0 s</span><span>{graded[-1][0]:.0f} s</span></div>')
+
+    st.markdown("#### Condition along the drive")
+    play = st.button("▶  Play the drive", type="primary",
+                     help="Steps through the sampled frames in order, showing what "
+                          "was detected and the score it produced.")
+
+    strip_slot, chart_slot = st.empty(), st.empty()
+    play_slot = st.container()
+
+    if play:
+        frame_slot = play_slot.empty()
+        for i, (t, img, dets, res) in enumerate(graded, 1):
+            strip_slot.markdown(strip_html(i), unsafe_allow_html=True)
+            chart_slot.line_chart({"PCI": scores[:i]}, height=190)
+            colour = band(res.pci)[1]
+            with frame_slot.container():
+                a, b = st.columns([1.55, 1], gap="large")
+                a.image(draw(img, dets, names, road_roi(*img.size, top_fraction=top)),
+                        use_container_width=True)
+                b.markdown(
+                    f'<div class="sr-card" style="background:{colour};'
+                    f'color:{ink_for(colour)}"><div class="lbl">{t:.1f} s</div>'
+                    f'<div class="val">{res.pci:.0f}</div>'
+                    f'<div class="rate">{res.rating}</div></div>',
+                    unsafe_allow_html=True)
+                b.markdown(f'<div class="sr-note" style="margin-top:.6rem">'
+                           f'{len(dets)} detections · '
+                           f'{res.inspected_area_m2:.0f} m² measured</div>',
+                           unsafe_allow_html=True)
+            time.sleep(0.55)
+        frame_slot.empty()
+    else:
+        strip_slot.markdown(strip_html(len(graded)), unsafe_allow_html=True)
+        chart_slot.line_chart({"PCI": scores}, height=190)
 
     c1, c2, c3 = st.columns(3)
     for col, k, v, u in ((c1, "Frames graded", f"{len(graded)}", f"1 per {every_s:g} s"),

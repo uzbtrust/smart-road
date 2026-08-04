@@ -159,8 +159,11 @@ Skipping that conversion on one real survey section moved its PCI from 26.6 to
 **0.0** — errors up to 26 points, silently.
 
 **Camera height dominates the error budget.** Ground area per pixel goes as
-`height² / (dy³·f²)`, so a 10 % error in the tape measurement becomes a 21 %
-error in every density, and therefore in the deduct value. Asserted in
+`height² / (dy³·f²)`, so a 10 % error in the tape measurement is a 21 % error in
+every square metre. It does not cancel when area becomes density: the inspected
+surface grows with height too, but only linearly, because the measured band is a
+fixed ground depth. Measured on a fixed detection box, 1.95 m to 2.60 m took an
+area density from 7.6 % to 13.3 %. The height² scaling is asserted in
 `tests/test_from_detections.py`, not just claimed.
 
 **Severity is only measurable close to the camera.** On 1080p survey footage,

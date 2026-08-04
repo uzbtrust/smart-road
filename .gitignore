@@ -44,3 +44,6 @@ LABEL_TASK/
 
 # The demo clip is small enough to ship
 !samples/yangizamon_15s.mp4
+
+# Upload demo media — for the screen recording, not the repo
+demo_uploads/
