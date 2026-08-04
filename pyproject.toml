@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "smartroad"
+version = "0.1.0"
+description = "Automated ASTM D6433 Pavement Condition Index from road imagery"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [{ name = "Dostonbek Abdurakhmonov", email = "uzbekuzdev@gmail.com" }]
+keywords = ["astm-d6433", "pavement-condition-index", "road-damage", "yolo", "object-detection"]
+classifiers = [
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Image Recognition",
+    "License :: OSI Approved :: MIT License",
+]
+
+# The PCI engine, the geometry and the tiling are numpy-only on purpose: the
+# half of this project that implements the standard should not need a GPU stack
+# to run, to test, or to audit.
+dependencies = ["numpy>=2.0", "pillow>=10.0"]
+
+[project.optional-dependencies]
+detect = ["torch>=2.2", "torchvision>=0.17", "ultralytics>=8.3"]
+survey = ["openpyxl>=3.1"]
+app = ["streamlit>=1.40", "huggingface_hub>=0.26"]
+
+[project.urls]
+Homepage = "https://github.com/uzbtrust/smart-road"
+Weights = "https://huggingface.co/uzbtrust/smart-road-pci-yolo11"
+Dataset = "https://www.kaggle.com/datasets/uzbtrust/smartroad-yolo"
+
+[tool.setuptools.packages.find]
+include = ["smartroad*"]
+
+[tool.pytest.ini_options]
+# Tests import `smartroad` from the working tree rather than an installed copy,
+# so what CI checks is what the repository actually contains.
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-q"
