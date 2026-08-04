@@ -112,7 +112,7 @@ python scripts/download_models.py   # fetches weights from Hugging Face
 streamlit run app.py                # http://localhost:8501
 ```
 
-`pytest tests -q` runs 168 tests; the PCI, geometry and tiling halves need
+`pytest tests -q` runs 181 tests; the PCI, geometry and tiling halves need
 neither torch nor a GPU.
 
 ### The app
@@ -124,8 +124,23 @@ it sits on ASTM's own rating scale, the measured densities, and the deduct chain
 that produced it — deduct values → corrected deduct value → PCI. Nothing about
 the number is hidden behind the number.*
 
-- **Sample / Upload** — five bundled frames (Tashkent 4K survey and Tehran
-  street-level), or your own road photograph.
+Point it at a drive instead of a photograph and it grades every sampled frame,
+which is what a pavement management system actually wants — not "this road is
+46" but "it is 88 here and 11 two hundred metres later":
+
+![the app grading a 15-second drive](reports/demo/app_video.jpg)
+
+*15 s of Yangizamon street, one frame per second. The strip is each frame's ASTM
+band along the drive; the dip at 9–11 s is a pothole, and the app opens on that
+frame. Densities stay per frame and are never summed — at 35 km/h one sample per
+second leaves the frames about 10 m apart while the measured band is 3–12 m
+deep, so they overlap and adding them would count the same distress twice.*
+
+- **Sample / Upload** — five bundled frames and a 15 s clip (Tashkent 4K survey
+  and Tehran street-level), or your own photograph or video.
+- **Live controls** — detection is cached on the image and the detector
+  settings, so the camera and severity sliders re-run only the ASTM arithmetic
+  and respond instantly.
 - **Tiled inference** toggle — the difference it makes is visible immediately on
   the 4K samples.
 - **Camera panel** — height above the road, focal length and horizon row. The
@@ -200,13 +215,14 @@ smartroad/
     from_detections.py     detections -> densities -> PCI
   geometry/ipm.py          inverse perspective mapping
   detect/tiled.py          tiled inference with seam-aware merging
+  survey/video.py          samples a drive into frames, in-process via OpenCV
   data/build_yolo.py       merges four source datasets into one 8-class set
   report/                  self-contained HTML training report, inline SVG
 tools/
   gen_curves.py            regenerates curves.py from the upstream MIT source
   kaggle_fetch.py          resumable dataset download
 scripts/download_models.py
-tests/                     168 tests
+tests/                     181 tests
 ```
 
 ## Dataset

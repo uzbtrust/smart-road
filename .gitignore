@@ -16,7 +16,7 @@ DATA/kaggle_restore/
 # Katta ma'lumotlar — GitHub uchun emas
 DATA/raw/
 DATA/reference/
-SURVEY/
+/SURVEY/
 LABEL_TASK/block_crack/images/
 LABEL_TASK/professor/varaq_*.jpg
 models/*.pt
@@ -26,6 +26,7 @@ ICLOUD_QOLGAN_FAYLLAR.txt.gz
 *.7z
 *.MOV
 *.mov
+!samples/*.mp4
 *.mp4
 
 # Ichki ishchi hujjat — ochiq repoga emas
@@ -40,3 +41,6 @@ Baxodir.xlsx
 *.pdf
 LABEL_TASK/
 *.bak-*
+
+# The demo clip is small enough to ship
+!samples/yangizamon_15s.mp4
