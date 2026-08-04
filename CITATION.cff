@@ -1,0 +1,79 @@
+cff-version: 1.2.0
+title: Smart Road — automated Pavement Condition Index from road imagery
+message: >-
+  If you use this software, the trained weights or the dataset, please cite it
+  using the metadata below.
+type: software
+abstract: >-
+  An end-to-end implementation of ASTM D6433: road-surface distresses are
+  detected in imagery, converted from pixels to square metres and metres on the
+  road plane by inverse perspective mapping, and passed through the standard's
+  deduct-value curves and corrected-deduct-value iteration to produce a Pavement
+  Condition Index. The detector covers eight distress classes named and numbered
+  to match the standard's catalogue, so detections feed the PCI calculation
+  without a lossy mapping step. The PCI engine reproduces the worked example
+  printed in ASTM D6433-07 (published max CDV 51 and PCI 49; this implementation
+  gives 51.4 and 48.6) and is validated against a hand-measured field survey of
+  1,810 m of Yangizamon street in Tashkent.
+
+authors:
+  - given-names: Raximjon
+    family-names: Soataliyev
+    affiliation: Tashkent State Transport University
+    country: UZ
+    website: https://www.researchgate.net/profile/Raximjon-Soataliyev
+    alias: BeEngineer-UZ
+  - given-names: Dostonbek
+    family-names: Abdurakhmonov
+    country: UZ
+    website: https://github.com/uzbtrust
+    alias: uzbtrust
+
+repository-code: https://github.com/uzbtrust/smart-road
+url: https://github.com/uzbtrust/smart-road
+license: MIT
+version: 0.1.0
+date-released: '2026-08-04'
+
+keywords:
+  - ASTM D6433
+  - pavement condition index
+  - road distress detection
+  - object detection
+  - YOLO
+  - inverse perspective mapping
+  - civil engineering
+  - pavement management
+
+identifiers:
+  - type: url
+    value: https://huggingface.co/uzbtrust/smart-road-pci-yolo11
+    description: Trained detector weights
+  - type: url
+    value: https://www.kaggle.com/datasets/uzbtrust/smartroad-yolo
+    description: >-
+      Unified road-distress dataset, four public sources mapped onto the
+      ASTM D6433 taxonomy
+
+references:
+  - type: standard
+    title: >-
+      ASTM D6433-07 Standard Practice for Roads and Parking Lots Pavement
+      Condition Index Surveys
+    authors:
+      - name: ASTM International
+    year: 2007
+    institution:
+      name: ASTM International
+    notes: >-
+      The deduct-value curves, the allowable-deduct formula and the corrected
+      deduct-value procedure implemented in smartroad/pci/.
+  - type: software
+    title: pavement_condition_index
+    authors:
+      - name: Brand New Box
+    repository-code: https://github.com/brandnewbox/pavement_condition_index
+    license: MIT
+    notes: >-
+      Source of the digitised deduct-value polynomial coefficients regenerated
+      by tools/gen_curves.py.
