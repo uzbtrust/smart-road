@@ -117,6 +117,13 @@ neither torch nor a GPU.
 
 ### The app
 
+<video src="https://raw.githubusercontent.com/uzbtrust/smart-road/main/reports/demo/live_demo.mp4" controls poster="https://raw.githubusercontent.com/uzbtrust/smart-road/main/reports/demo/live_poster.jpg" width="100%"></video>
+
+*Two minutes, unedited: a photograph graded, the severity range, the deduct
+chain, tiled inference switched on and off, then a 15 s drive analysed frame by
+frame. If the player does not load, the file is
+[`reports/demo/live_demo.mp4`](reports/demo/live_demo.mp4).*
+
 ![the Streamlit app grading a road frame](reports/demo/app.jpg)
 
 *Left: what was detected and which surface was searched. Right: the score, where

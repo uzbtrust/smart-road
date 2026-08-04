@@ -47,3 +47,6 @@ LABEL_TASK/
 
 # Upload demo media — for the screen recording, not the repo
 demo_uploads/
+
+# The demo recording is the README's centrepiece
+!reports/demo/live_demo.mp4
