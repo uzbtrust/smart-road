@@ -117,6 +117,13 @@ neither torch nor a GPU.
 
 ### The app
 
+![the Streamlit app grading a road frame](reports/demo/app.jpg)
+
+*Left: what was detected and which surface was searched. Right: the score, where
+it sits on ASTM's own rating scale, the measured densities, and the deduct chain
+that produced it — deduct values → corrected deduct value → PCI. Nothing about
+the number is hidden behind the number.*
+
 - **Sample / Upload** — five bundled frames (Tashkent 4K survey and Tehran
   street-level), or your own road photograph.
 - **Tiled inference** toggle — the difference it makes is visible immediately on
