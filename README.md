@@ -1,6 +1,11 @@
 # Smart Road — automated Pavement Condition Index from road imagery
 
 [![CI](https://github.com/uzbtrust/smart-road/actions/workflows/ci.yml/badge.svg)](https://github.com/uzbtrust/smart-road/actions/workflows/ci.yml)
+[![Weights](https://img.shields.io/badge/%F0%9F%A4%97%20weights-smart--road--pci--yolo11-FFD21E)](https://huggingface.co/uzbtrust/smart-road-pci-yolo11)
+[![Dataset](https://img.shields.io/badge/Kaggle%20dataset-44.5k%20images-20BEFF?logo=kaggle&logoColor=white)](https://www.kaggle.com/datasets/uzbtrust/smartroad-yolo)
+[![License](https://img.shields.io/badge/code-MIT-green)](LICENSE)
+
+**Code** (here) · **[Trained weights](https://huggingface.co/uzbtrust/smart-road-pci-yolo11)** on Hugging Face · **[Dataset](https://www.kaggle.com/datasets/uzbtrust/smartroad-yolo)** on Kaggle
 
 ## Project partner
 
