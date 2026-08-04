@@ -2,6 +2,35 @@
 
 [![CI](https://github.com/uzbtrust/smart-road/actions/workflows/ci.yml/badge.svg)](https://github.com/uzbtrust/smart-road/actions/workflows/ci.yml)
 
+## Project partner
+
+**[Raximjon Soataliyev](https://github.com/BeEngineer-UZ)** — road engineer, lecturer at Tashkent State Transport University
+[LinkedIn](https://www.linkedin.com/in/raximjon-soataliyev-6b0b3b196/) · [ResearchGate](https://www.researchgate.net/profile/Raximjon-Soataliyev) · [GitHub](https://github.com/BeEngineer-UZ)
+
+This project was his idea before it was anyone's code.
+
+He brought the ASTM D6433 framing that the entire pipeline is built around — the
+decision to *grade* a road against a standard rather than count defects, which is
+the one thing that makes this different from every road-damage detector on
+GitHub. He defined what had to be measured and to what tolerance. As the domain
+expert he ruled on what counts as a distress, at what severity, and where the
+engineering judgement sits that a model cannot supply.
+
+He also carried out the field survey the whole system is validated against:
+**1,810 m of Yangizamon street in Tashkent, 12 sections, 9 distress types,
+measured by hand.** Without those measurements there is nothing here to check the
+model against, and no way to know whether any of it is true.
+
+And he backed it materially. There was no funding, no institution and no budget
+behind this — he paid for the GPU time that trained the model, and stayed with it
+from the first sketch through to the point where the system could be demonstrated
+working.
+
+**He did not assist this project. He is a partner in it.** The code is mine; the
+problem, the standard, the measurements and the means to build it are his.
+
+---
+
 Most road-condition tools **count** defects. This one **grades** the road the way
 an engineer is required to — through **ASTM D6433**, the standard that turns a
 distress survey into a Pavement Condition Index between 0 and 100.
