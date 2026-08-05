@@ -352,7 +352,7 @@ with st.sidebar:
     st.markdown("### Camera geometry")
     st.caption("These set the pixel-to-metre mapping. Changing them is instant — "
                "detection is cached, only the ASTM arithmetic re-runs.")
-    height_m = st.number_input("Camera height above road (m)", 0.5, 4.0, 1.95, 0.05,
+    height_m = st.number_input("Camera height above road (m)", 0.5, 4.0, 1.70, 0.05,
                                help="A distress and the surface it sits on both "
                                     "scale with height², so for area distresses "
                                     "the two largely cancel in the density. It "
