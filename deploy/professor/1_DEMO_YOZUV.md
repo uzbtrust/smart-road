@@ -59,29 +59,7 @@ fayl montajchi uchun ancha qulay. Nomlash: `01_sayt_hero.mov`, `02_argument.mov`
 | 06 | Cheklovlar boʻlimi | 8 s | |
 | 07 | **Til almashtirish: UZ → RU → EN** | 12 s | Har birida 3 soniya turing. Bu uch tillilikning isboti |
 
-### Blok 2 — Ilova, fotosurat rejimi (2 daqiqa atrofida)
-
-| № | Nima yoziladi | Davomiyligi | Izoh |
-|---|---|---|---|
-| 08 | Namuna rasm tanlanadi, natija chiqadi | 15 s | Kutish vaqtini kesmang — halol koʻrinsin |
-| 09 | Aniqlash qatlamiga yaqinlashish | 8 s | Ramkalar va sinf nomlari oʻqilsin |
-| 10 | Baho kartasi va yetti bandli shkala | 8 s | |
-| 11 | **Deduct zanjiri jadvali** | 12 s | Eng muhim kadr. Zichlik → chegirma → tuzatilgan → PCI |
-| 12 | **Jiddiylik slayderi**: past → oʻrta → yuqori | 12 s | Uch qiymat oʻzgarishini koʻrsating |
-| 13 | **Kamera balandligi**: 1.70 → 2.20 → 1.70 | 12 s | PCI siljishini koʻrsating. Bu — halollik dalili |
-| 14 | **Plitkali inferens**: yoqilgan → oʻchirilgan → yoqilgan | 15 s | Aniqlashlar yoʻqolib qaytishi koʻrinsin |
-
-### Blok 3 — Ilova, video rejimi (1 daqiqa atrofida)
-
-| № | Nima yoziladi | Davomiyligi | Izoh |
-|---|---|---|---|
-| 15 | 15 soniyalik klip tanlanadi, tahlil boshlanadi | 20 s | Jarayonni kesmang |
-| 16 | Holat tasmasi toʻliq chiqadi | 10 s | Yashildan qizilgacha oʻtish koʻrinsin |
-| 17 | Eng yomon kadr bosiladi | 10 s | |
-
----
-
-## B2. Qaysi namunalarni tanlash kerak — aniq roʻyxat
+### Qaysi namunalarni tanlash kerak — aniq roʻyxat
 
 Ilovaning **Sample** roʻyxatidan aynan shu uchtasini tanlang. Ular saytda
 koʻrsatilgan kadrlarning oʻzi, ya'ni video bilan sayt bir xil rasmni koʻrsatadi
@@ -102,6 +80,53 @@ tomoshabin saytdagi rasmning qanday hosil boʻlganini koʻradi.
 
 ---
 
+### Blok 2 — Ilova, fotosurat rejimi (2 daqiqa atrofida)
+
+| № | Nima yoziladi | Davomiyligi | Izoh |
+|---|---|---|---|
+| 08 | Namuna rasm tanlanadi, natija chiqadi | 15 s | Kutish vaqtini kesmang — halol koʻrinsin |
+| 09 | Aniqlash qatlamiga yaqinlashish | 8 s | Ramkalar va sinf nomlari oʻqilsin |
+| 10 | Baho kartasi va yetti bandli shkala | 8 s | |
+| 11 | **Deduct zanjiri jadvali** | 12 s | Eng muhim kadr. Zichlik → chegirma → tuzatilgan → PCI |
+| 12 | **Jiddiylik slayderi**: past → oʻrta → yuqori | 12 s | Uch qiymat oʻzgarishini koʻrsating |
+| 13 | **Kamera balandligi**: 1.70 → 2.20 → 1.70 | 12 s | PCI siljishini koʻrsating. Bu — halollik dalili |
+| 14 | **Plitkali inferens**: yoqilgan → oʻchirilgan → yoqilgan | 15 s | Aniqlashlar yoʻqolib qaytishi koʻrinsin |
+
+### Blok 3 — Ilova, video rejimi (1 daqiqa atrofida)
+
+| № | Nima yoziladi | Davomiyligi | Izoh |
+|---|---|---|---|
+| 15 | 15 soniyalik klip tanlanadi, tahlil boshlanadi | 20 s | Jarayonni kesmang |
+| 16 | Holat tasmasi toʻliq chiqadi | 10 s | Yashildan qizilgacha oʻtish koʻrinsin |
+| 17 | Eng yomon kadr bosiladi | 10 s | |
+
+### Blok 4 — Yuklash (Upload) — **eng muhim blok**
+
+Bu blok butun demoning eng ishonarli qismi. Namunalar oldindan tayyorlangan
+boʻlishi mumkin — yuklangan fayl esa yoʻq. Hakam shu yerda tizim haqiqatan
+ishlayotganiga ishonadi.
+
+Fayllar alohida yuboriladi (`demo_uploads/` papkasi). Ular namunalar
+roʻyxatida **yoʻq** — bu ataylab, chunki yuklash yoʻli aynan shu bilan
+isbotlanadi.
+
+| № | Nima yoziladi | Davomiyligi | Izoh |
+|---|---|---|---|
+| 18 | **Upload** tanlanadi, `upload_yangizamon_reverse_frame.jpg` yuklanadi | 15 s | Fayl nomi va hajmi kadrda koʻrinsin |
+| 19 | Natija chiqadi | 12 s | PCI **69.7 — Qoniqarli**, 8 ta aniqlash, 29 m² |
+| 20 | **Drive video → Upload**, `upload_yangizamon_reverse_15s.mp4` | 15 s | 12 MB. Yuklanish jarayoni koʻrinsin |
+| 21 | Video tahlili tugaydi, holat tasmasi chiqadi | 15 s | PCI 55 dan 100 gacha oʻzgaradi |
+
+**Nega aynan bu fayllar:** ikkalasi ham Yangizamon koʻchasining **teskari
+yoʻnalishdagi** oʻtishidan olingan, namunalar esa oldinga yoʻnalishdan. Yaʼni
+bu — hech qachon koʻrsatilmagan, lekin oʻsha koʻchaning oʻzi.
+
+**Aytishga arzigan gap:** namunalar `Serious 13` beradi, yuklangan fayl esa
+`Qoniqarli 69.7`. Bu tasodif emas va buni pitchda taʼkidlash kerak — tizim
+hamma yoʻlni yomon demaydi, u **farqlaydi**.
+
+---
+
 ## C. Yozib boʻlgach — montajchiga nima beriladi
 
 1. **Barcha `.mov` fayllar** — kesilmagan, siqilmagan
@@ -109,6 +134,16 @@ tomoshabin saytdagi rasmning qanday hosil boʻlganini koʻradi.
 3. `2_VIDEO_PITCH.md` — u yerda qaysi kadr qaysi jumla ostida turishi yozilgan
 4. **Logotip**: `Logo/SVG/` papkasi (vektor — istalgan oʻlchamda aniq)
 5. **Brend ranglari:** toʻq sariq `#F8A519`, koʻmir `#3A3A3C`
+
+**Yozishdan oldin sizga kerak boʻladigan ikkita fayl** (18–21 kadrlar uchun):
+
+| Fayl | Hajmi | Kutilgan natija |
+|---|---|---|
+| `upload_yangizamon_reverse_frame.jpg` | 298 KB | PCI 69.7 · Qoniqarli · 8 aniqlash · 29 m² |
+| `upload_yangizamon_reverse_15s.mp4` | 12 MB | 15 kadr · PCI 55–100 · oʻrtacha 78 |
+
+Bu raqamlar oldindan oʻlchab qoʻyilgan. Ekranda boshqa natija chiqsa —
+yozuvni toʻxtating va xabar bering, demak sozlamalar surilib ketgan.
 
 ---
 
@@ -121,3 +156,4 @@ tomoshabin saytdagi rasmning qanday hosil boʻlganini koʻradi.
 - [ ] Kamera balandligi 1.70 m dan boshlanadi (1.95 emas — u eski faraz)
 - [ ] Sichqoncha harakati sekin va maqsadli
 - [ ] Fayllar raqamlangan va nomlangan
+- [ ] Yuklash bloki (18–21) yozilgan — bu blok tushib qolmasin
