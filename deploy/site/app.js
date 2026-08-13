@@ -327,7 +327,10 @@
       frame.innerHTML = "";
       frame.appendChild(el("video", { src: src, poster: poster, controls: true, autoplay: true, style: { width: "100%", display: "block" } }));
     } }, el("span", { class: "play-dot" }, el("span", { class: "play-tri" })), labelText);
-    frame.appendChild(play);
+    /* No src yet means the recording has not been made. Show the still on its
+       own rather than a play control that swallows the click -- a dead button
+       reads as a broken site, an unadorned figure does not. */
+    if (src) frame.appendChild(play);
     return el("figure", { style: { margin: 0 } }, frame,
       meta ? el("figcaption", { style: { marginTop: "var(--sp-4)", fontFamily: "var(--font-mono)", fontSize: "var(--t-caption)", color: "var(--ink-3)" } }, meta) : null);
   }
