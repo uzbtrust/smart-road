@@ -372,7 +372,10 @@ with st.sidebar:
             p = st.selectbox("Sample", pics, format_func=lambda x: x.stem.replace("_", " "))
             payload, name = p.read_bytes(), p.name
         else:
-            up = st.file_uploader("Road photograph", type=["jpg", "jpeg", "png"])
+            up = st.file_uploader("Road photograph", type=["jpg", "jpeg", "png"],
+                                  help="jpg, jpeg or png. To upload a video, "
+                                       "switch Input to Drive video first — the "
+                                       "file picker filters by the mode you are in.")
             if up:
                 payload, name = up.read(), up.name
     else:
@@ -384,7 +387,10 @@ with st.sidebar:
             p = st.selectbox("Sample clip", vids, format_func=lambda x: x.stem.replace("_", " "))
             payload, name = p.read_bytes(), p.name
         else:
-            up = st.file_uploader("Drive video", type=["mp4", "mov", "m4v"])
+            up = st.file_uploader("Drive video", type=["mp4", "mov", "m4v"],
+                                  help="mp4, mov or m4v. To upload a photograph, "
+                                       "switch Input to Photograph first — the "
+                                       "file picker filters by the mode you are in.")
             if up:
                 payload, name = up.read(), up.name
         every_s = st.slider("Sample every (s)", 0.5, 5.0, 1.0, 0.5)

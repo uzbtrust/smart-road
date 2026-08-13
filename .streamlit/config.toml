@@ -12,6 +12,15 @@ font = "sans serif"
 
 [server]
 headless = true
+# Hugging Face serves the Space through its own proxy on a different origin from
+# the one the app thinks it is on. Streamlit's XSRF check compares a cookie
+# against a token on the upload request, and behind that proxy the cookie does
+# not always survive -- the PUT is refused and file_uploader turns red with no
+# message a user can act on. Nothing here is authenticated and no data is
+# written, so the check is protecting nothing; upload working matters more.
+enableXsrfProtection = false
+enableCORS = false
+maxUploadSize = 300
 
 [browser]
 gatherUsageStats = false
