@@ -65,7 +65,7 @@ window.SR_COPY = {
       sub: "Montajsiz yozuv. Fotosurat baholanadi, jiddiylik oraligʻi koʻrsatiladi, deduct zanjiri ochiladi, plitkali inferens yoqib-oʻchiriladi, soʻng 15 soniyalik haydash kadrma-kadr tahlil qilinadi.",
       noticeHead: "Nimaga eʼtibor bering",
       notice: [
-        ["Bitta rasm uchun uchta baho chiqadi — model jiddiylikni bashorat qilmaydi, shuning uchun javob ", { b: "oraliq" }, " sifatida beriladi: ", { v: "50.3 / 35.2 / 19.4" }, "."],
+        ["Bitta rasm uchun uchta baho chiqadi — model jiddiylikni bashorat qilmaydi, shuning uchun javob ", { b: "oraliq" }, " sifatida beriladi: ", { v: "51.5 / 36.5 / 20.5" }, "."],
         ["Kamera balandligini oʻzgartirsangiz PCI siljiydi. Bu nuqson emas — oʻlchov shu farazga tayanadi va u yashirilmaydi."],
         ["Plitkali inferensni oʻchiring: 4K kadrda aniqlashlar soni tushib ketadi. Bizning kadrlarimizda butun kadr boʻyicha ", { v: "0" }, " va ", { v: "2" }, " ta topilgan joyda plitkalab ", { v: "2" }, " va ", { v: "4" }, " ta topilgan."],
       ],
@@ -188,7 +188,7 @@ window.SR_COPY = {
       sub: "Запись без монтажа. Оценивается фотография, показывается диапазон степеней тяжести, раскрывается цепочка вычитаемых значений, включается и выключается тайловый инференс, затем 15-секундная поездка анализируется покадрово.",
       noticeHead: "На что обратить внимание",
       notice: [
-        ["Для одного снимка получаются три оценки — модель не предсказывает степень тяжести, поэтому ответ даётся как ", { b: "диапазон" }, ": ", { v: "50,3 / 35,2 / 19,4" }, "."],
+        ["Для одного снимка получаются три оценки — модель не предсказывает степень тяжести, поэтому ответ даётся как ", { b: "диапазон" }, ": ", { v: "51,5 / 36,5 / 20,5" }, "."],
         ["Измените высоту камеры — PCI сдвинется. Это не дефект: измерение опирается на это допущение, и оно не скрыто."],
         ["Выключите тайловый инференс: на 4K-кадре число обнаружений падает. На наших кадрах по всему кадру находилось ", { v: "0" }, " и ", { v: "2" }, " объекта там, где по тайлам — ", { v: "2" }, " и ", { v: "4" }, "."],
       ],
@@ -311,7 +311,7 @@ window.SR_COPY = {
       sub: "An unedited recording. A photograph is graded, the severity range is shown, the deduct chain opens, tiled inference is switched on and off, then a 15-second drive is analysed frame by frame.",
       noticeHead: "What to notice",
       notice: [
-        ["One image produces three scores — the model does not predict severity, so the answer is given as a ", { b: "range" }, ": ", { v: "50.3 / 35.2 / 19.4" }, "."],
+        ["One image produces three scores — the model does not predict severity, so the answer is given as a ", { b: "range" }, ": ", { v: "51.5 / 36.5 / 20.5" }, "."],
         ["Change the camera height and the PCI moves. That is not a flaw: the measurement rests on that assumption, and the assumption is not hidden."],
         ["Switch tiled inference off: detections on a 4K frame drop away. On our own frames, whole-frame inference returned ", { v: "0" }, " and ", { v: "2" }, " detections where tiling returned ", { v: "2" }, " and ", { v: "4" }, "."],
       ],

@@ -65,11 +65,22 @@ Ilovaning **Sample** roʻyxatidan aynan shu uchtasini tanlang. Ular saytda
 koʻrsatilgan kadrlarning oʻzi, ya'ni video bilan sayt bir xil rasmni koʻrsatadi
 va hakam ikkisini bogʻlay oladi.
 
-| Kadr | Roʻyxatda qanday koʻrinadi | Nega aynan shu |
+| Kadr | Roʻyxatda qanday koʻrinadi | Kutilgan natija |
 |---|---|---|
-| **Fotosurat 1** | `attain tehran  Attain SMP WS v2 000795` | Saytdagi ikkinchi rasm shu. 1024×576 |
-| **Fotosurat 2** | `yangizamon forward 160s` | Saytdagi asosiy (hero) kadr shu. Toshkent, 1920×1080 |
+| **Fotosurat 1** | `attain tehran  Attain SMP WS v2 000800` | PCI **36.5 — Juda yomon** · 4 aniqlash · 28.9 m² |
+| **Fotosurat 2** | `yangizamon forward 160s` | PCI **83.7 — Qoniqarli** · Toshkent, 1920×1080 |
 | **Video** | `yangizamon 15s` | 15 soniya, tahlil ~45–60 s davom etadi |
+
+⚠️ **`000795` ni tanlamang.** U PCI **0 — Failed** beradi. Bu dasturning xatosi
+emas: oʻsha kadrda toʻrsimon yoriq shunchalik zichki, chegirmalar yigʻindisi 100
+shiftiga urilади va PCI nolga tushadi — ASTM aynan shunday ishlaydi. Lekin
+ekranda `0` va `Failed` koʻringani buzuq dasturdek oʻqiladi, shuning uchun demo
+uchun yaramaydi. `000528` ham oʻrta jiddiylikda 12.9 beradi va yuqorida nolga
+tushadi — uni ham tanlamang.
+
+**12-kadr (jiddiylik slayderi) uchun `000800` ni ishlating** — faqat oʻshanda
+uchala qiymat ham noldan katta va bir-biridan aniq farq qiladi:
+past **51.5** → oʻrta **36.5** → yuqori **20.5**.
 
 Fayllar repoda: `samples/` papkasida. Ularni alohida yuklab olish **shart emas** —
 ilovaning oʻzida tayyor turibdi, roʻyxatdan tanlansa boʻldi.
@@ -88,7 +99,7 @@ tomoshabin saytdagi rasmning qanday hosil boʻlganini koʻradi.
 | 09 | Aniqlash qatlamiga yaqinlashish | 8 s | Ramkalar va sinf nomlari oʻqilsin |
 | 10 | Baho kartasi va yetti bandli shkala | 8 s | |
 | 11 | **Deduct zanjiri jadvali** | 12 s | Eng muhim kadr. Zichlik → chegirma → tuzatilgan → PCI |
-| 12 | **Jiddiylik slayderi**: past → oʻrta → yuqori | 12 s | Uch qiymat oʻzgarishini koʻrsating |
+| 12 | **Jiddiylik slayderi**: past → oʻrta → yuqori | 12 s | `000800` da: 51.5 → 36.5 → 20.5 |
 | 13 | **Kamera balandligi**: 1.70 → 2.20 → 1.70 | 12 s | PCI siljishini koʻrsating. Bu — halollik dalili |
 | 14 | **Plitkali inferens**: yoqilgan → oʻchirilgan → yoqilgan | 15 s | Aniqlashlar yoʻqolib qaytishi koʻrinsin |
 

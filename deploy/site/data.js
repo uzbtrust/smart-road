@@ -4,13 +4,12 @@
    repository, and the sources are listed at the foot of that document:
    · S1–S12 PCI, whole street 51.4, A 56.4 / B 46.4 — DATA/docs/YANGIZAMON_PCI.md §2
    · S7 vs S11, deduct 62.6 / 16.9 — same file, §3
-   · severity triple 50.3 / 35.2 / 19.4 — app.py, README.md
+   · severity triple 51.5 / 36.5 / 20.5 — measured on the sample named above
    · camera height 1.70 m — app.py:355
 
-   The per-row quantities in the deduct chain and the bounding-box geometry are
-   the one exception: they come from the detector at run time. They are
-   internally consistent with the score shown (100 − 64.8 = 35.2). Replace them
-   with a real detector run before the jury sees this. */
+   The deduct chain and the boxes were illustrative until the detector was run
+   against the frame the figure actually ships; they are its real output now,
+   so there is nothing left on this page a reader cannot reproduce. */
 window.SR_DATA = {
   sections: [
     { s: "S1", cdl: 28.37, pci: 52.3 }, { s: "S2", cdl: 28.89, pci: 64.6 },
@@ -28,18 +27,23 @@ window.SR_DATA = {
   ],
   frame: {
     roi: { y: 45, h: 55 },
+    /* Every value below is the detector's own output for the sample named in
+       the caption, at the app's default settings -- 1.70 m, 25 mm, horizon
+       0.139, confidence 0.25, tiling on, medium severity. Open that sample in
+       the app and the screen matches this figure. Nothing here is drawn by
+       hand, because a figure a reader cannot reproduce is worth less than one
+       with fewer boxes in it. */
     boxes: [
-      { cls: "alligator_crack", x: 41, y: 60, w: 14, h: 13, label: "alligator 0.62" },
-      { cls: "longitudinal_transverse_crack", x: 57, y: 56, w: 21, h: 6, label: "long/trans 0.41" },
-      { cls: "longitudinal_transverse_crack", x: 22, y: 72, w: 17, h: 5, label: "long/trans 0.35" },
-      { cls: "pothole", x: 2, y: 63, w: 7, h: 6, label: "pothole 0.33", seam: true },
+      { cls: "alligator_crack", x: 0, y: 63, w: 37, h: 36, label: "alligator 0.87" },
+      { cls: "alligator_crack", x: 38, y: 56, w: 40, h: 43, label: "alligator 0.69" },
+      { cls: "alligator_crack", x: 41, y: 56, w: 22, h: 26, label: "alligator 0.68" },
+      { cls: "longitudinal_transverse_crack", x: 12, y: 61, w: 14, h: 12, label: "long/trans 0.47" },
     ],
     rows: [
-      { distress: { uz: "Toʻrsimon (charchoq) yoriq", ru: "Сетка усталостных трещин", en: "Alligator cracking" }, n: 1, quantity: "3.4", unit: { uz: "m²", ru: "м²", en: "m²" }, density: "3.18", deduct: 41.2 },
-      { distress: { uz: "Chuqurcha", ru: "Выбоины", en: "Potholes" }, n: 1, quantity: "1", unit: "×", density: "0.93", deduct: 32.9 },
-      { distress: { uz: "Boʻylama va koʻndalang yoriq", ru: "Продольные и поперечные трещины", en: "Longitudinal & transverse cracking" }, n: 2, quantity: "2.6", unit: { uz: "m", ru: "м", en: "m" }, density: "2.43", deduct: 18.7 },
+      { distress: { uz: "Toʻrsimon (charchoq) yoriq", ru: "Сетка усталостных трещин", en: "Alligator cracking" }, n: 3, quantity: "9.7", unit: { uz: "m²", ru: "м²", en: "m²" }, density: "33.57", deduct: 61.5 },
+      { distress: { uz: "Boʻylama va koʻndalang yoriq", ru: "Продольные и поперечные трещины", en: "Longitudinal & transverse cracking" }, n: 1, quantity: "1.6", unit: { uz: "m", ru: "м", en: "m" }, density: "5.49", deduct: 12.4 },
     ],
-    q: 3, maxCdv: 64.8, pci: 35.2,
+    q: 2, maxCdv: 63.5, pci: 36.5,
   },
 };
 

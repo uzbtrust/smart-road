@@ -155,7 +155,8 @@ deep, so they overlap and adding them would count the same distress twice.*
   the measurement rests on.
 - **Severity slider** — the model has no severity head, so a severity is applied
   to every detection. Sweeping it shows the range the answer really occupies.
-  On the bundled Tehran frame: **50.3 → 35.2 → 19.4** for low → medium → high.
+  On the bundled Tehran frame `attain_tehran__Attain_SMP_WS_v2_000800.jpg`:
+  **51.5 → 36.5 → 20.5** for low → medium → high.
 
 ## What is actually hard here
 
