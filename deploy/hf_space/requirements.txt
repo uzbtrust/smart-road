@@ -1,0 +1,22 @@
+# Hugging Face Spaces build. Differs from the repository's requirements.txt in
+# two ways that matter, and only those two:
+#
+#   1. torch from the CPU index. Plain `pip install torch` on Linux pulls the
+#      CUDA build -- about 2.5 GB of wheels for a GPU the free tier does not
+#      have. If the build log still shows nvidia-* packages being fetched, pin
+#      `torch==2.13.0+cpu` and `torchvision==0.28.0+cpu` instead.
+#   2. opencv headless. The Space image has no GL libraries, so the desktop
+#      build of opencv-python fails at import on libGL.so.1.
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+torch==2.13.0
+torchvision==0.28.0
+ultralytics==8.4.115
+ultralytics-thop==2.1.6
+opencv-python-headless==5.0.0.93
+numpy==2.5.1
+pillow==12.3.0
+matplotlib==3.11.1
+PyYAML==6.0.3
+huggingface_hub>=0.26
+streamlit>=1.40

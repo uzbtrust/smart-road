@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="uz" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Smart Road — ASTM D6433 PCI</title>
+<meta name="description" content="Yoʻl qoplamasi nuqsonlari oddiy avtomobil videosidan aniqlanadi va ASTM D6433 boʻyicha 0–100 baho chiqariladi.">
+<meta name="color-scheme" content="dark light">
+<link rel="icon" href="assets/logo-mark.svg" type="image/svg+xml">
+<link rel="preload" href="fonts/IBMPlexSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<div id="root"></div>
+
+<noscript>
+  <div style="max-width:66ch;margin:0 auto;padding:48px 24px;font-family:'IBM Plex Sans',sans-serif;color:#EDEDEA">
+    <p><b>Smart Road</b> — yoʻl qoplamasi nuqsonlari oddiy avtomobil videosidan aniqlanadi va ASTM D6433 xalqaro standarti orqali 0 dan 100 gacha baho chiqariladi.</p>
+    <p>Bu sahifa uchun JavaScript kerak. Ishlayotgan ilova: <a href="https://huggingface.co/spaces/uzbtrust/smart-road" style="color:#F8A519">huggingface.co/spaces/uzbtrust/smart-road</a></p>
+  </div>
+</noscript>
+
+<script src="uz-apostrophe.js"></script>
+<script src="data.js"></script>
+<script src="copy.js"></script>
+<script src="app.js"></script>
+<script src="sections.js"></script>
+
+<script>
+/* Font gate.
+   The Uzbek apostrophe fit (--oz-inset, .sr-oz in styles.css) is measured
+   against IBM Plex Sans and is correct for no other face. So the rule is scoped
+   to [data-plex="on"] and this is the only place that attribute is set:
+
+     Plex loaded    → attribute set → apostrophes fitted, oʻ gʻ correct.
+     Plex missing   → no attribute  → apostrophes unfitted but readable, and a
+                      banner says so. Never silently wrong, never pulled into
+                      the neighbouring letters.
+
+   The fonts ship in fonts/ so the second branch should not occur; it exists
+   because a font can still fail on a misconfigured host, and the failure must
+   degrade rather than break. */
+document.fonts.ready.then(function () {
+  if (document.fonts.check('400 16px "IBM Plex Sans"')) {
+    document.documentElement.setAttribute('data-plex', 'on');
+    return;
+  }
+  console.error('IBM Plex Sans failed to load from fonts/. The Uzbek ʻ is left unfitted — check that the .woff2 files deployed and are served as font/woff2.');
+  var b = document.createElement('div');
+  b.className = 'font-alarm';
+  b.textContent = 'IBM Plex Sans failed to load from fonts/ — text is falling back and the Uzbek ʻ is unfitted.';
+  document.body.appendChild(b);
+});
+</script>
+</body>
+</html>

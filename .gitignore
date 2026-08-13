@@ -50,3 +50,16 @@ demo_uploads/
 
 # The demo recording is the README's centrepiece
 !reports/demo/live_demo.mp4
+
+# Claude Design uchun vaqtinchalik yig'ma papka
+design_input/
+
+# Ichki ish fayllari — ochiq repoga emas
+SAYT_MATNI.md
+DASTUR_KODI.txt
+
+# Vercel loyiha bog'lanishi — lokal holat
+.vercel
+
+# Claude Code lokal sozlamalari (launch.json ulashiladi)
+.claude/settings.local.json

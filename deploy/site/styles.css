@@ -1,0 +1,405 @@
+/* Smart Road — marketing site, static build.
+   Generated from the design system's token files. Do not edit here: edit
+   tokens/*.css in the design system and re-export.
+
+   Font faces are in fonts/fonts.css, loaded before this file by index.html.
+   Note the .sr-oz rule at the foot of this file is scoped to [data-plex="on"];
+   index.html sets that attribute only once IBM Plex Sans is confirmed loaded. */
+
+/* ═══ tokens/typography.css ═══ */
+:root{
+  --font-sans:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+
+  /* ── THE MONO / SANS SPLIT — a hard rule, not a preference ──
+     Mono is only legible as precision when it is contrasted against a
+     proportional face. Set in mono: numerals, codes, identifiers, filenames,
+     coordinates, dimensions, confidences, units, clause and figure numbers.
+     Set in Plex Sans: every human-language string, INCLUDING small
+     letterspaced caps labels. A label is a word; a word is never mono. */
+
+  /* Size ramp. Editorial, not app-generic: a long jump from body to display,
+     and three small sizes because this product is mostly annotation. */
+  --t-micro:11px;   /* labels, axis ticks */
+  --t-caption:12px; /* figure captions, table meta */
+  --t-small:13px;   /* table cells, dense UI */
+  --t-ui:14px;      /* controls, nav */
+  --t-body:15.5px;  /* running text */
+  --t-lede:18px;
+  --t-h4:17px;
+  --t-h3:21px;
+  --t-h2:27px;
+  --t-h1:38px;
+  --t-display:56px;
+  --t-score:96px;   /* the PCI numeral, and nothing else */
+
+  --lh-tight:1.08; /* @kind font */
+  --lh-heading:1.18; /* @kind font */
+  --lh-ui:1.35; /* @kind font */
+  --lh-body:1.62; /* @kind font */
+  --lh-caption:1.5; /* @kind font */
+
+  --fw-regular:400; /* @kind font */
+  --fw-medium:500; /* @kind font */
+  --fw-semibold:600; /* @kind font */
+  --fw-bold:700; /* @kind font */
+
+  --track-display:-0.022em; /* @kind font */
+  --track-heading:-0.014em; /* @kind font */
+  --track-body:0; /* @kind font */
+  --track-label:0.11em;  /* @kind font */ /* sans caps labels */
+  --track-mono:0.01em; /* @kind font */
+
+  --measure:66ch; /* @kind font */      /* running text */
+  --measure-note:74ch; /* @kind font */ /* captions and notes, slightly wider */
+
+  /* Every numeral in this product is a measurement. */
+  --numeric:tabular-nums; /* @kind font */
+
+  /* ── UZBEK MODIFIER APOSTROPHE ──
+     IBM Plex Sans draws U+02BB with the sidebearings of an English quotation
+     mark: at 100 px the glyph is 11.8 units of ink inside a 60.0 unit advance —
+     48.2 units of air, 80 % of the character. Uzbek sets it inside a word
+     (oʻ gʻ), so it reads as a broken word: "o ʻ lchandi".
+     U+2018 in the same face is 27.3 advance / 15.8 ink, i.e. correctly fitted,
+     which is why substitution looks tempting — but it is the wrong codepoint,
+     it introduces a line-break opportunity mid-word, and text copied out of the
+     product would be orthographically wrong. So: keep the codepoint, correct
+     the fit. --oz-inset removes the excess sidebearing symmetrically and is
+     applied by the .sr-oz rule in base.css. */
+  --oz-inset:-0.165em; /* @kind font */
+}
+
+
+/* ═══ tokens/colors.css ═══ */
+:root{
+  /* ── Brand. Chrome, navigation and calls to action ONLY.
+     Brand orange never appears inside a chart, a band, a detection box or any
+     other place where colour carries a measured meaning. ── */
+  --brand-orange:#F8A519;
+  --brand-orange-hover:#FFB63C;
+  --brand-orange-press:#D98B0B;
+  --brand-orange-ink:#1A1A19;      /* text ON orange */
+  --brand-charcoal:#3A3A3C;
+  --brand-charcoal-hover:#4A4A4D;
+  --brand-charcoal-ink:#F8A519;    /* the lockup on charcoal is orange */
+
+  /* Brand orange AS TEXT. #F8A519 is a fill colour: on a near-white plane it
+     measures 1.83:1, so it can never be ink in light mode — and the figure
+     marker, the § clause number and the report identifier are all small text in
+     brand colour. --accent-ink is the ink-safe pairing, re-declared per theme;
+     --brand-orange keeps its exact value for fills, rules and chrome.
+     Use --accent-ink for TEXT, --brand-orange for everything else. */
+  --accent-ink:#F8A519;            /* dark: 8.8:1 on --plane */
+
+  /* ── Warm neutral ramp. Inherited from the report page, extended so a page,
+     a card, a table header, a chart plane and an input track are all
+     distinguishable without a border on every one of them. ── */
+  --n-00:#ffffff;
+  --n-01:#f8f8f6;
+  --n-02:#f4f4f1;
+  --n-03:#edece7;
+  --n-04:#e6e5df;
+  --n-05:#c3c2b7;
+  --n-06:#8a8880;
+  --n-07:#52514e;
+  --n-08:#383835;
+  --n-09:#2c2c2a;
+  --n-10:#232321;
+  --n-11:#1c1c1a;
+  --n-12:#151513;
+  --n-13:#0d0d0d;
+
+  /* ── Data series. Deliberately a blue ramp plus neutral: the condition
+     ramp owns green→red, and brand orange is barred from charts, so a chart
+     that needs two series uses two blues, not a new hue. The report page's
+     #eb6834 series is superseded. ── */
+  --data-1:#2a78d6;
+  --data-2:#5b7f9e;
+  --data-3:#14406e;
+  --data-weak:#8a8880;   /* a series you should not trust yet (n too small) */
+  --data-1-soft:rgba(42,120,214,.14);
+}
+
+/* ── Dark is the default surface. ── */
+:root,[data-theme="dark"]{
+  color-scheme:dark;
+  --plane:#0d0d0d;          /* the page */
+  --surface-1:#151513;      /* cards, sections */
+  --surface-2:#1c1c1a;      /* table headers, chips, raised rows */
+  --surface-3:#2c2c2a;      /* input tracks, wells */
+  --surface-figure:#111110; /* chart plane — a shade under the card it sits in */
+  --surface-inset:#0a0a09;  /* photograph mounts, code */
+
+  --ink-1:#f7f7f4;
+  --ink-2:#c3c2b7;
+  --ink-3:#8a8880;
+  --ink-inverse:#0d0d0d;
+
+  --line-1:rgba(255,255,255,.10);
+  --line-2:rgba(255,255,255,.18);
+  --line-strong:#383835;
+  --grid:#232321;
+  --baseline:#4a4a46;
+  --track:#2c2c2a;
+
+  --focus-ring:#F8A519;
+  --link:#6EA8E8;
+  --link-hover:#9CC5F2;
+  --selection:rgba(248,165,25,.28);
+  --shadow-1:none;
+  --shadow-2:none;
+  --overlay-scrim:rgba(8,8,7,.72);
+}
+
+[data-theme="light"]{
+  color-scheme:light;
+  --plane:#f4f4f1;
+  --surface-1:#ffffff;
+  --surface-2:#f4f4f1;
+  --surface-3:#e6e5df;
+  --surface-figure:#fbfbf9;
+  --surface-inset:#edece7;
+
+  --ink-1:#0b0b0b;
+  --ink-2:#52514e;
+  /* #8a8880 measures 3.55:1 on white — below AA for the caption, axis-tick and
+     table-meta text this token carries. Darkened to clear 4.5:1 on both
+     --surface-1 (5.4:1) and --plane (4.9:1). Dark mode keeps #8a8880 (5.5:1). */
+  --ink-3:#6b6a63;
+  --ink-inverse:#ffffff;
+
+  --line-1:rgba(11,11,11,.09);
+  --line-2:rgba(11,11,11,.18);
+  --line-strong:#c3c2b7;
+  --grid:#e6e5df;
+  --baseline:#c3c2b7;
+  --track:#edece7;
+
+  --focus-ring:#B87508;
+  --link:#1F5FAE;
+  --link-hover:#14406e;
+  --selection:rgba(248,165,25,.35);
+  --shadow-1:0 1px 2px rgba(11,11,11,.04),0 8px 24px rgba(11,11,11,.05);
+  --shadow-2:0 1px 2px rgba(11,11,11,.05),0 18px 44px rgba(11,11,11,.08);
+  --overlay-scrim:rgba(11,11,11,.42);
+  --data-1:#2a78d6;
+  --data-2:#4a6d8a;
+  --data-3:#14406e;
+  /* Ink-safe brand orange: 5.4:1 on --plane, 5.9:1 on --surface-1.
+     --brand-orange itself is unchanged and still used for every fill. */
+  --accent-ink:#8f5600;
+}
+
+
+/* ═══ tokens/condition.css ═══ */
+/* ── FUNCTIONAL COLOUR. These are not brand colours and are not themeable.
+   Seven ASTM D6433 condition bands and eight distress classes. Order and
+   thresholds are fixed by the standard; the ink pairings below are computed
+   from relative luminance, not chosen by eye. ── */
+:root{
+  /* ── THE INK TABLE — seven explicit pairings, one per band. ──
+     NEVER derive band ink from a luminance threshold. There is no threshold
+     that gets this set right: any cut low enough to flip Poor #fc2e1f to dark
+     ink also flips Good #0f7d1d to dark, which is worse. Each pairing below is
+     the measured winner of white-vs-black on that specific hex. If a band
+     colour is ever tuned, re-measure both candidates and edit this table by
+     hand — that is the only supported way to change it.
+
+     PCI ≥ 85 · 70 · 55 · 40 · 25 · 10 · 0                white  /  black  */
+  --band-good:#0f7d1d;          --band-good-ink:#ffffff;         /*  4.3   |  4.9  → white: black fails on a saturated green at body size */
+  --band-satisfactory:#1ec734;  --band-satisfactory-ink:#0b0b0c; /*  2.5   |  8.4  */
+  --band-fair:#fefb4a;          --band-fair-ink:#0b0b0c;         /*  1.3   | 16.6  */
+  --band-poor:#fc2e1f;          --band-poor-ink:#0b0b0c;         /*  3.8   |  5.5  */
+  --band-very-poor:#a81a10;     --band-very-poor-ink:#ffffff;    /*  7.4   |  2.8  */
+  --band-serious:#690d07;       --band-serious-ink:#ffffff;      /* 13.9   |  1.5  */
+  --band-failed:#979797;        --band-failed-ink:#0b0b0c;       /*  2.9   |  7.1  — grey on purpose: off the scale, not worst-red */
+
+  /* Thresholds, exposed so a marker or a legend never hard-codes them. */
+  --band-good-min:85; /* @kind other */ --band-satisfactory-min:70; /* @kind other */ --band-fair-min:55; /* @kind other */
+  --band-poor-min:40; /* @kind other */ --band-very-poor-min:25; /* @kind other */ --band-serious-min:10; /* @kind other */ --band-failed-min:0; /* @kind other */
+
+  /* The full ramp, low→high, for a scale bar. Widths are the band spans. */
+  --condition-ramp:linear-gradient(to right,
+    var(--band-failed) 0 10%, var(--band-serious) 10% 25%,
+    var(--band-very-poor) 25% 40%, var(--band-poor) 40% 55%,
+    var(--band-fair) 55% 70%, var(--band-satisfactory) 70% 85%,
+    var(--band-good) 85% 100%); /* @kind other */
+
+  /* ── Eight distress classes, drawn as 2–3 px boxes on grey, brown and
+     wet-black asphalt. Replaces the stock palette. Rules used:
+     high chroma only (mid-greys and pastels vanish on asphalt), eight
+     separated hues, none of them brand orange, and marking/manhole is
+     deliberately achromatic because it is detected but never graded. ── */
+  --class-longitudinal-transverse-crack:#FF3B57;
+  --class-alligator-crack:#2E9BFF;
+  --class-block-crack:#FFD23F;
+  --class-patching:#16D6A4;
+  --class-pothole:#FF5CE1;
+  --class-weathering-raveling:#B6FF3D;
+  --class-lane-shoulder-drop-off:#9B7BFF;
+  --class-marking-manhole:#EDEDED;
+
+  /* Overlay furniture */
+  --roi-outline:#00D26A;                    /* the surface actually searched */
+  --roi-fill:rgba(0,210,106,.10);
+  --box-stroke-width:2px; /* @kind other */
+  --box-label-scrim:rgba(10,10,9,.82);
+  --seam-flag:#ffffff;                      /* box touching a tile seam */
+}
+
+
+/* ═══ tokens/space.css ═══ */
+:root{
+  --sp-0:0; /* @kind spacing */
+  --sp-1:2px;
+  --sp-2:4px;
+  --sp-3:8px;
+  --sp-4:12px;
+  --sp-5:16px;
+  --sp-6:20px;
+  --sp-7:24px;
+  --sp-8:32px;
+  --sp-9:40px;
+  --sp-10:48px;
+  --sp-11:64px;
+  --sp-12:88px;
+  --sp-13:120px;
+
+  /* Layout. A visible 12-column grid, asymmetric use: text sits in columns
+     1–7, apparatus (figures, tables, scores) breaks right or full-bleed. */
+  --grid-cols:12; /* @kind other */
+  --gutter:24px;
+  --page-pad:32px;
+  --page-pad-narrow:20px;
+  --content-max:1240px;   /* editorial pages */
+  --app-max:1560px;       /* the analysis app runs wider */
+  --rail:340px;           /* the app's control rail */
+
+  --control-h-sm:28px;
+  --control-h:34px;
+  --control-h-lg:44px;
+  --hit-min:44px; /* @kind other */
+}
+
+
+/* ═══ tokens/surface.css ═══ */
+:root{
+  /* Radii are tight. A measurement instrument is not a consumer app; nothing
+     in this system is rounder than 12px, and most of it is 4. */
+  --r-0:0; /* @kind radius */
+  --r-1:2px;
+  --r-2:4px;   /* chips, inputs, buttons */
+  --r-3:6px;
+  --r-4:10px;  /* cards, sections, tiles */
+  --r-5:12px;  /* the score card, the only large radius */
+  --r-pill:999px;
+
+  --bw:1px; /* @kind other */
+  --bw-thick:2px; /* @kind other */
+  --border-hair:var(--bw) solid var(--line-1); /* @kind other */
+  --border-strong:var(--bw) solid var(--line-2); /* @kind other */
+
+  /* Tick rule — the recurring rule motif: a hairline with survey ticks.
+     Used under section headers and along figure baselines. */
+  --tick-size:4px; /* @kind other */
+  --tick-gap:8px; /* @kind other */
+  --tick-rule:repeating-linear-gradient(to right,
+    var(--line-2) 0 1px, transparent 1px var(--tick-gap)); /* @kind other */
+
+  --focus-width:2px; /* @kind other */
+  --focus-offset:2px; /* @kind other */
+}
+
+
+/* ═══ tokens/motion.css ═══ */
+:root{
+  /* Instrument motion: short, linear-ish, no overshoot, nothing decorative.
+     A value that changes because you moved a slider must not appear to
+     animate — it must appear to have been recomputed. */
+  --dur-1:90ms; /* @kind other */    /* hover, press */
+  --dur-2:150ms; /* @kind other */   /* control state, chip select */
+  --dur-3:220ms; /* @kind other */   /* panel open, theme swap */
+  --ease:cubic-bezier(.2,0,0,1); /* @kind other */
+  --ease-out:cubic-bezier(0,0,.2,1); /* @kind other */
+  --transition-control:background var(--dur-1) var(--ease),border-color var(--dur-1) var(--ease),color var(--dur-1) var(--ease); /* @kind other */
+}
+@media (prefers-reduced-motion:reduce){
+  :root{--dur-1:0ms; /* @kind other */ --dur-2:0ms; /* @kind other */ --dur-3:0ms; /* @kind other */}
+}
+
+
+/* ═══ tokens/base.css ═══ */
+/* Element defaults. Everything above this file is values; this is the only
+   place the system paints anything by itself. */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--plane);
+  color:var(--ink-1);
+  font-family:var(--font-sans);
+  font-size:var(--t-body);
+  line-height:var(--lh-body);
+  font-variant-numeric:var(--numeric);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+::selection{background:var(--selection);color:var(--ink-1)}
+
+h1,h2,h3,h4{margin:0;font-weight:var(--fw-semibold);line-height:var(--lh-heading);color:var(--ink-1);text-wrap:balance}
+h1{font-size:var(--t-h1);letter-spacing:var(--track-display);line-height:var(--lh-tight)}
+h2{font-size:var(--t-h2);letter-spacing:var(--track-heading)}
+h3{font-size:var(--t-h3);letter-spacing:var(--track-heading)}
+h4{font-size:var(--t-h4)}
+p{margin:0 0 var(--sp-5);max-width:var(--measure);text-wrap:pretty}
+small{font-size:var(--t-caption)}
+code,kbd,pre,samp{font-family:var(--font-mono);font-size:.92em}
+
+a{color:var(--link);text-decoration:none;border-bottom:1px solid color-mix(in oklab,var(--link) 40%,transparent);transition:var(--transition-control)}
+a:hover{color:var(--link-hover);border-bottom-color:currentColor}
+a:active{color:var(--link-hover);opacity:.8}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,[tabindex]:focus-visible{
+  outline:var(--focus-width) solid var(--focus-ring);outline-offset:var(--focus-offset);border-radius:var(--r-1)
+}
+
+hr{border:0;height:1px;background:var(--line-1);margin:var(--sp-8) 0}
+
+/* Tables are a first-class surface here: the product is a wall of numbers. */
+table{border-collapse:collapse;width:100%;font-size:var(--t-small);font-variant-numeric:var(--numeric)}
+th,td{text-align:left;padding:var(--sp-3) var(--sp-4);border-bottom:1px solid var(--line-1)}
+th{color:var(--ink-2);font-weight:var(--fw-semibold);font-size:var(--t-caption);letter-spacing:.02em;white-space:nowrap}
+td.n,th.n{text-align:right;font-family:var(--font-mono)}
+tbody tr:hover{background:var(--surface-2)}
+
+/* ── The two micro-typographic devices ──
+   .sr-label is a WORD, so it is Plex Sans. .sr-clause and .sr-num are CODES,
+   so they are mono. This split is the whole reason mono still reads as
+   precision anywhere in the product. */
+.sr-label{
+  font-family:var(--font-sans);font-size:var(--t-micro);font-weight:var(--fw-semibold);
+  letter-spacing:var(--track-label);text-transform:uppercase;color:var(--ink-3)
+}
+.sr-clause{font-family:var(--font-mono);font-size:var(--t-micro);letter-spacing:var(--track-mono);color:var(--accent-ink)}
+.sr-num{font-family:var(--font-mono);font-variant-numeric:var(--numeric)}
+.sr-rule{height:var(--tick-size);background:var(--tick-rule);border-top:1px solid var(--line-1);opacity:.9}
+.sr-measure{max-width:var(--measure)}
+
+/* ── Uzbek modifier apostrophe fit ──
+   Wrap U+02BB / U+02BC in <span class="sr-oz"> — or let uz-apostrophe.js do it
+   once per subtree — and the excess sidebearing is removed symmetrically.
+   The codepoint is unchanged, so copied text stays orthographically correct.
+   .sr-oz-run is the single wrapper the JS pass puts around a whole text node so
+   that a text node inside an inline-flex container stays ONE flex item and the
+   container's gap cannot open up around the apostrophe.
+
+   GATED ON [data-plex="on"] ON PURPOSE. The inset is measured against IBM Plex
+   Sans and is correct for no other face. Applied to a fallback it corrects
+   nothing — it pulls the apostrophe INTO the letters on either side, which is
+   worse than the over-spacing it exists to fix. Set the attribute on <html>
+   from a document.fonts.check once Plex is confirmed, so a page whose font
+   fails degrades to unfitted-but-readable instead of broken. */
+[data-plex="on"] .sr-oz{margin-left:var(--oz-inset);margin-right:var(--oz-inset)}
+.sr-oz-run{display:inline;white-space:inherit}
+
+

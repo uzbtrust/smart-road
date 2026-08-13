@@ -1,0 +1,95 @@
+/* Layout, interactive states and breakpoints for the static site.
+
+   Division of labour: this file owns anything that needs a media query, a
+   pseudo-class or a pseudo-element — grids, hover, focus. Everything else is an
+   inline style written by app.js, which keeps each component's look next to the
+   markup that produces it.
+
+   Breakpoints: 1080 (tablet — side columns fold under), 720 (phone — every grid
+   becomes one column). Nothing is hidden at any width; a juror on a phone sees
+   the same sections in the same order. */
+
+body{margin:0;overflow-x:hidden}
+img{max-width:100%}
+.wrap{max-width:var(--content-max);margin:0 auto;padding:var(--sp-12) var(--sp-8)}
+.plane-raised{background:var(--surface-1);border-top:1px solid var(--line-1);border-bottom:1px solid var(--line-1)}
+
+/* ── header ── */
+.site-head{position:sticky;top:0;z-index:20;background:var(--surface-1);border-bottom:1px solid var(--line-1)}
+.site-head-in{max-width:var(--content-max);margin:0 auto;padding:var(--sp-3) var(--sp-8);min-height:60px;display:flex;flex-wrap:wrap;align-items:center;row-gap:var(--sp-3);column-gap:var(--sp-6)}
+.site-nav{display:flex;flex-wrap:wrap;column-gap:var(--sp-6);row-gap:var(--sp-2);flex:1 1 auto;min-width:0}
+.site-nav a{border-bottom:none;color:var(--ink-3);font-size:var(--t-ui);white-space:nowrap}
+.site-nav a:hover{color:var(--ink-1)}
+.site-nav a[aria-current="true"]{color:var(--ink-1);font-weight:var(--fw-medium)}
+.head-controls{flex:0 0 auto;margin-left:auto;display:flex;align-items:center;gap:var(--sp-5)}
+
+/* ── grids ── */
+.g-hero{display:grid;grid-template-columns:minmax(0,46ch) minmax(min(52vw,560px),1fr);gap:var(--sp-11);align-items:start;padding:var(--sp-12) 0;padding-left:max(var(--sp-8),calc((100vw - var(--content-max)) / 2))}
+.g-75{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:var(--sp-11)}
+.g-75-end{align-items:end}
+.g-75-start{align-items:start}
+.g-compare{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:var(--sp-7);align-items:center}
+.g-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-5)}
+.g-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-10) var(--sp-11)}
+.g-side{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:var(--sp-11);align-items:start}
+.g-stage2{display:grid;grid-template-columns:minmax(0,1fr) 264px;gap:var(--sp-8);align-items:start}
+.g-person{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:var(--sp-11);align-items:start}
+.g-foot{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:var(--sp-11);align-items:start}
+.g-foot-links{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-3) var(--sp-8)}
+
+/* ── controls ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--sp-3);font-family:var(--font-sans);font-weight:var(--fw-semibold);line-height:1;white-space:nowrap;border-radius:var(--r-2);border:1px solid transparent;cursor:pointer;transition:var(--transition-control)}
+.btn-primary{background:var(--brand-orange);color:var(--brand-orange-ink)}
+.btn-primary:hover{background:var(--brand-orange-hover)}
+.btn-primary:active{background:var(--brand-orange-press)}
+.btn-sm{height:var(--control-h-sm);padding:0 10px;font-size:var(--t-caption)}
+.btn-lg{height:var(--control-h-lg);padding:0 20px;font-size:var(--t-body)}
+
+.seg{display:inline-flex;padding:2px;gap:2px;background:var(--surface-3);border-radius:var(--r-2)}
+.seg button{height:var(--control-h-sm);padding:0 12px;border:1px solid transparent;border-radius:3px;background:transparent;color:var(--ink-2);font-family:var(--font-sans);font-size:var(--t-caption);font-weight:var(--fw-medium);line-height:1;white-space:nowrap;cursor:pointer;transition:var(--transition-control)}
+.seg button[aria-checked="true"]{background:var(--surface-1);border-color:var(--line-2);color:var(--ink-1);font-weight:var(--fw-semibold)}
+
+.lang{display:inline-flex;align-items:stretch;border:1px solid var(--line-2);border-radius:var(--r-2);overflow:hidden;height:var(--control-h-sm)}
+.lang button{padding:0 9px;border:none;background:transparent;color:var(--ink-3);font-family:var(--font-mono);font-size:var(--t-micro);font-weight:var(--fw-medium);letter-spacing:.08em;line-height:1;cursor:pointer;transition:var(--transition-control)}
+.lang button + button{border-left:1px solid var(--line-2)}
+.lang button[aria-pressed="true"]{background:var(--brand-orange);color:var(--brand-orange-ink)}
+
+.play{position:absolute;inset:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;gap:var(--sp-4);border:none;background:rgba(10,10,9,.34);cursor:pointer;font-family:var(--font-sans);font-size:var(--t-ui);font-weight:var(--fw-semibold);color:#fff;transition:var(--transition-control)}
+.play:hover{background:rgba(10,10,9,.22)}
+.play-dot{width:52px;height:52px;border-radius:50%;background:var(--brand-orange);color:var(--brand-orange-ink);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.play-tri{width:0;height:0;border-top:9px solid transparent;border-bottom:9px solid transparent;border-left:15px solid currentColor;margin-left:4px}
+
+/* ── footer ── */
+.site-foot{background:var(--brand-charcoal);color:#EDEDEA}
+.site-foot a{color:#EDEDEA;border-bottom:1px solid rgba(237,237,234,.28);font-size:var(--t-small);text-wrap:balance}
+.site-foot a:hover{border-bottom-color:#EDEDEA}
+
+/* ── font guard ──
+   If IBM Plex Sans is missing, the Uzbek U+02BB inset is applied against a face
+   it was not measured on and oʻ / gʻ break again. Never fail silently. */
+.font-alarm{position:fixed;left:0;right:0;bottom:0;z-index:999;padding:10px 16px;background:var(--band-poor);color:var(--band-poor-ink);font-family:var(--font-mono);font-size:12px;text-align:center}
+
+@media (max-width:1080px){
+  .wrap{padding:var(--sp-11) var(--sp-7)}
+  .g-hero{grid-template-columns:minmax(0,1fr);gap:var(--sp-9);padding-left:var(--sp-7);padding-right:var(--sp-7)}
+  .g-hero figure{margin-left:calc(var(--sp-7) * -1);margin-right:calc(var(--sp-7) * -1)}
+  .g-side,.g-stage2{grid-template-columns:minmax(0,1fr);gap:var(--sp-8)}
+  .g-3{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g-person,.g-foot{grid-template-columns:minmax(0,1fr);gap:var(--sp-5)}
+  .g-75{gap:var(--sp-8)}
+}
+@media (max-width:720px){
+  .wrap{padding:var(--sp-10) var(--sp-6)}
+  .g-75,.g-2,.g-3,.g-foot-links{grid-template-columns:minmax(0,1fr);gap:var(--sp-7)}
+  .g-75-end{align-items:start}
+  .g-compare{grid-template-columns:minmax(0,1fr);gap:var(--sp-5)}
+  .g-compare > .rot{transform:rotate(90deg)}
+  .site-head-in{padding:var(--sp-3) var(--sp-6)}
+  h1{font-size:var(--t-h1) !important}
+  h2{font-size:var(--t-h2) !important}
+  /* The survey table is 12 columns of measured values; on a phone it scrolls
+     sideways rather than being reflowed into something that is no longer a
+     table an engineer can read across. */
+  .survey-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .survey-scroll table{min-width:640px}
+}
