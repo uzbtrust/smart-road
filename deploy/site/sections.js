@@ -28,7 +28,7 @@
         el("div", { class: "head-controls" },
           S.segmented([{ value: "dark", label: c.chrome.theme[0] }, { value: "light", label: c.chrome.theme[1] }], state.theme, function (v) { set({ theme: v }); }, "Theme"),
           S.langSwitcher(state.lang, function (v) { set({ lang: v }); }),
-          S.button(c.cta, "sm", function () { w.open(w.SR_MVP_URL, "_blank", "noopener"); }))));
+          S.linkButton(c.cta, "sm", w.SR_MVP_URL))));
   }
 
   /* ── S1 · hero ──
@@ -56,7 +56,7 @@
         el("p", { style: { margin: "0 0 var(--sp-8)", paddingLeft: "var(--sp-5)", borderLeft: "2px solid var(--line-strong)", fontSize: "var(--t-small)", color: "var(--ink-2)", lineHeight: "var(--lh-body)", maxWidth: "44ch" } },
           s.trust[0], el("span", { style: { fontFamily: "var(--font-mono)", fontWeight: "var(--fw-semibold)", color: "var(--ink-1)", fontVariantNumeric: "tabular-nums" } }, s.trust[1]),
           s.trust[2], el("span", { style: { fontFamily: "var(--font-mono)", fontWeight: "var(--fw-semibold)", color: "var(--ink-1)", fontVariantNumeric: "tabular-nums" } }, s.trust[3]), s.trust[4]),
-        S.button(s.cta, "lg", function () { w.open(w.SR_MVP_URL, "_blank", "noopener"); })),
+        S.linkButton(s.cta, "lg", w.SR_MVP_URL)),
       fig);
   }
 

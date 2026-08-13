@@ -103,6 +103,15 @@
   }
 
   /* ── core/Button.jsx ── chrome only; brand orange never carries a measurement */
+  /* A call to action that leaves the site is a link, not a button. window.open
+     with a third argument is read as a popup request and gets blocked, and an
+     anchor can also be middle-clicked, copied and opened in a new tab. */
+  function linkButton(text, size, href) {
+    return el("a", { href: href, target: "_blank", rel: "noopener noreferrer",
+      class: "btn btn-primary btn-" + (size || "sm"),
+      style: { textDecoration: "none" } }, text);
+  }
+
   function button(text, size, onclick) {
     return el("button", { type: "button", class: "btn btn-primary btn-" + (size || "sm"), onclick: onclick }, text);
   }
@@ -323,7 +332,7 @@
       meta ? el("figcaption", { style: { marginTop: "var(--sp-4)", fontFamily: "var(--font-mono)", fontSize: "var(--t-caption)", color: "var(--ink-3)" } }, meta) : null);
   }
 
-  w.SR = { el: el, svg: svg, css: css, rich: rich, label: label, caption: caption, figMark: figMark, button: button,
+  w.SR = { el: el, svg: svg, css: css, rich: rich, label: label, caption: caption, figMark: figMark, button: button, linkButton: linkButton,
     langSwitcher: langSwitcher, segmented: segmented, metricTile: metricTile, callout: callout,
     detectionOverlay: detectionOverlay, detectionLegend: detectionLegend, conditionScale: conditionScale,
     scoreCard: scoreCard, deductChain: deductChain, videoBlock: videoBlock, MONO: MONO, LABEL: LABEL };
