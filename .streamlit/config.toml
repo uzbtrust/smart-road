@@ -1,0 +1,17 @@
+# Streamlit paints its own chrome -- sidebar, widgets, focus rings -- before any
+# injected CSS runs, so the palette has to be declared here as well as in the
+# stylesheet. These values are the site's dark tokens verbatim: plane, surface-1,
+# ink-1 and the brand orange.
+[theme]
+base = "dark"
+primaryColor = "#F8A519"
+backgroundColor = "#0d0d0d"
+secondaryBackgroundColor = "#151513"
+textColor = "#f7f7f4"
+font = "sans serif"
+
+[server]
+headless = true
+
+[browser]
+gatherUsageStats = false

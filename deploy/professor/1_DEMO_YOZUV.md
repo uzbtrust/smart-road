@@ -81,6 +81,27 @@ fayl montajchi uchun ancha qulay. Nomlash: `01_sayt_hero.mov`, `02_argument.mov`
 
 ---
 
+## B2. Qaysi namunalarni tanlash kerak — aniq roʻyxat
+
+Ilovaning **Sample** roʻyxatidan aynan shu uchtasini tanlang. Ular saytda
+koʻrsatilgan kadrlarning oʻzi, ya'ni video bilan sayt bir xil rasmni koʻrsatadi
+va hakam ikkisini bogʻlay oladi.
+
+| Kadr | Roʻyxatda qanday koʻrinadi | Nega aynan shu |
+|---|---|---|
+| **Fotosurat 1** | `attain tehran  Attain SMP WS v2 000795` | Saytdagi ikkinchi rasm shu. 1024×576 |
+| **Fotosurat 2** | `yangizamon forward 160s` | Saytdagi asosiy (hero) kadr shu. Toshkent, 1920×1080 |
+| **Video** | `yangizamon 15s` | 15 soniya, tahlil ~45–60 s davom etadi |
+
+Fayllar repoda: `samples/` papkasida. Ularni alohida yuklab olish **shart emas** —
+ilovaning oʻzida tayyor turibdi, roʻyxatdan tanlansa boʻldi.
+
+Saytdagi kadr esa `reports/demo/tiled_4k_fwd_160s.jpg` — bu `yangizamon
+forward 160s` ning aniqlangan (ramkalar chizilgan) varianti. Ya'ni videoda
+tomoshabin saytdagi rasmning qanday hosil boʻlganini koʻradi.
+
+---
+
 ## C. Yozib boʻlgach — montajchiga nima beriladi
 
 1. **Barcha `.mov` fayllar** — kesilmagan, siqilmagan

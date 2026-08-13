@@ -87,28 +87,92 @@ st.set_page_config(page_title="Smart Road — ASTM D6433 PCI",
                    page_icon="🛣️", layout="wide",
                    initial_sidebar_state="expanded")
 
+# The tokens below are the marketing site's dark palette and type scale, copied
+# rather than approximated: the app and the site are one product, and a juror
+# moves between them in a single click. Anything Streamlit paints before this
+# stylesheet loads is set in .streamlit/config.toml instead.
 st.markdown("""
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  .block-container { padding-top: 2.2rem; max-width: 1500px; }
-  #MainMenu, footer, .stAppDeployButton { visibility: hidden; }
-  .sr-title { font-size: 2.35rem; font-weight: 750; letter-spacing: -.02em; margin: 0 0 .15rem 0; }
-  .sr-sub   { font-size: 1.02rem; opacity: .72; margin: 0 0 .35rem 0; }
-  .sr-links { font-size: .88rem; opacity: .6; margin-bottom: 1.4rem; }
-  .sr-links a { text-decoration: none; }
-  .sr-card { border-radius: 16px; padding: 1.35rem 1.5rem; }
-  .sr-card .lbl { font-size: .74rem; letter-spacing: .16em; font-weight: 700; opacity: .72; }
-  .sr-card .val { font-size: 4.4rem; font-weight: 800; line-height: .96; margin: .1rem 0; }
-  .sr-card .rate { font-size: 1.3rem; font-weight: 700; }
-  .sr-stat { border: 1px solid rgba(140,140,160,.25); border-radius: 12px; padding: .8rem 1rem; }
-  .sr-stat .k { font-size: .72rem; letter-spacing: .1em; opacity: .6; text-transform: uppercase; }
-  .sr-stat .v { font-size: 1.5rem; font-weight: 700; }
-  .sr-stat .u { font-size: .85rem; opacity: .6; font-weight: 500; }
-  .sr-chain { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .95rem; line-height: 1.9; }
-  .sr-chip { display:inline-block; padding:.12rem .5rem; border-radius:6px;
-             background: rgba(140,140,160,.16); margin-right:.3rem; }
-  .sr-note { font-size: .82rem; opacity: .6; }
-  .sr-partner { border-left: 3px solid #4dabf7; padding: .55rem 0 .55rem .85rem;
-                font-size: .86rem; opacity: .82; }
+  :root {
+    --font-sans:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+    --font-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --plane:#0d0d0d; --surface-1:#151513; --surface-2:#1c1c1a; --surface-3:#2c2c2a;
+    --surface-inset:#0a0a09;
+    --ink-1:#f7f7f4; --ink-2:#c3c2b7; --ink-3:#8a8880;
+    --line-1:rgba(255,255,255,.10); --line-2:rgba(255,255,255,.18);
+    --brand-orange:#F8A519; --brand-orange-ink:#1A1A19;
+    --track-label:.11em; --track-heading:-.014em; --track-display:-.022em;
+  }
+  html, body, .stApp, [class*="css"] { font-family: var(--font-sans); }
+  .stApp { background: var(--plane); color: var(--ink-1); }
+  /* Streamlit sets Source Sans on its own markdown containers with a selector
+     that outranks anything on body, so the face has to be claimed here too.
+     The mono rule below is deliberately later: it has to win back the values. */
+  [data-testid="stMarkdownContainer"], [data-testid="stMarkdownContainer"] *,
+  .sr-title, .sr-sub, .sr-links, .sr-card, .sr-stat, .sr-note, .sr-partner,
+  h1, h2, h3, h4, h5, button, label, input, select { font-family: var(--font-sans); }
+  .block-container { padding-top: 2.4rem; max-width: 1500px; }
+  #MainMenu, footer, .stAppDeployButton, header[data-testid="stHeader"] { visibility: hidden; }
+  ::selection { background: rgba(248,165,25,.28); }
+  /* Sidebar reads as an instrument panel, not a navigation column: one plane
+     back from the page, separated by a rule rather than a shadow. */
+  section[data-testid="stSidebar"] { background: var(--surface-1); border-right: 1px solid var(--line-1); }
+  section[data-testid="stSidebar"] h3 { font-size: 12px; letter-spacing: var(--track-label);
+      text-transform: uppercase; font-weight: 600; color: var(--ink-3);
+      margin: 1.6rem 0 .5rem 0; }
+  section[data-testid="stSidebar"] label { font-size: 13px; color: var(--ink-2); }
+  /* Values are mono, labels are not. A number the reader may check belongs in a
+     face where the digits line up; a word does not. */
+  [data-testid="stMetricValue"], .stSlider [data-testid="stTickBarMin"],
+  .stSlider [data-testid="stTickBarMax"], .sr-chain, .sr-stat .v, .sr-card .val,
+  code, pre { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  .sr-title { font-size: 38px; font-weight: 700; letter-spacing: var(--track-display);
+              line-height: 1.08; margin: 0 0 .35rem 0; color: var(--ink-1); }
+  .sr-sub   { font-size: 18px; line-height: 1.5; color: var(--ink-2); margin: 0 0 .5rem 0;
+              max-width: 66ch; }
+  .sr-links { font-size: 13px; color: var(--ink-3); margin-bottom: 1.8rem; }
+  .sr-links a { text-decoration: none; color: var(--ink-3);
+                border-bottom: 1px solid var(--line-2); }
+  .sr-links a:hover { color: var(--brand-orange); border-bottom-color: var(--brand-orange); }
+  .sr-card { border-radius: 10px; padding: 1.35rem 1.5rem; }
+  .sr-card .lbl  { font-size: 11px; letter-spacing: var(--track-label); font-weight: 600;
+                   text-transform: uppercase; opacity: .82; }
+  .sr-card .val  { font-size: 96px; font-weight: 700; line-height: .92;
+                   letter-spacing: var(--track-display); margin: .1rem 0; }
+  .sr-card .rate { font-size: 21px; font-weight: 600; letter-spacing: var(--track-heading); }
+  .sr-stat { border: 1px solid var(--line-1); border-radius: 4px; padding: .85rem 1rem;
+             background: var(--surface-1); }
+  .sr-stat .k { font-size: 11px; letter-spacing: var(--track-label); color: var(--ink-3);
+                text-transform: uppercase; font-weight: 600; }
+  .sr-stat .v { font-size: 27px; font-weight: 600; color: var(--ink-1);
+                letter-spacing: var(--track-heading); }
+  .sr-stat .u { font-size: 13px; color: var(--ink-3); font-weight: 400; }
+  /* The deduct chain is the evidence the score is not a black box, so it gets a
+     surface of its own rather than sitting loose on the page. */
+  .sr-chain { font-size: 14px; line-height: 1.9; color: var(--ink-2);
+              background: var(--surface-inset); border: 1px solid var(--line-1);
+              border-radius: 4px; padding: .9rem 1.1rem; }
+  .sr-chip { display:inline-block; padding:.14rem .5rem; border-radius:3px;
+             background: var(--surface-3); color: var(--ink-1); margin-right:.3rem;
+             font-family: var(--font-mono); font-size: 13px; }
+  .sr-note { font-size: 13px; line-height: 1.5; color: var(--ink-3); max-width: 74ch; }
+  .sr-partner { border-left: 2px solid var(--brand-orange); padding: .55rem 0 .55rem .95rem;
+                font-size: 13px; line-height: 1.6; color: var(--ink-3); max-width: 74ch; }
+  .sr-partner a { color: var(--ink-2); }
+  h1, h2, h3, h4, h5 { font-family: var(--font-sans); letter-spacing: var(--track-heading);
+                       color: var(--ink-1); }
+  .main h5 { font-size: 11px; letter-spacing: var(--track-label); text-transform: uppercase;
+             color: var(--ink-3); font-weight: 600; margin-top: 1.6rem; }
+  [data-testid="stExpander"] { border: 1px solid var(--line-1); border-radius: 4px;
+                               background: var(--surface-1); }
+  [data-testid="stExpander"] summary { font-size: 14px; color: var(--ink-2); }
+  [data-testid="stDataFrame"] { border: 1px solid var(--line-1); border-radius: 4px; }
+  .stProgress > div > div > div > div { background: var(--brand-orange); }
+  .stButton button, .stDownloadButton button { border-radius: 4px; font-weight: 600; }
+  :focus-visible { outline: 2px solid var(--brand-orange); outline-offset: 2px; }
 </style>
 """, unsafe_allow_html=True)
 

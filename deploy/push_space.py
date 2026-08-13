@@ -36,6 +36,9 @@ PAYLOAD = (
     ("deploy/hf_space/README.md", "README.md"),
     ("deploy/hf_space/Dockerfile", "Dockerfile"),
     ("deploy/hf_space/requirements.txt", "requirements.txt"),
+    # Streamlit paints its chrome from this before any injected CSS runs, so
+    # without it the Space starts on the default theme and flashes white.
+    (".streamlit/config.toml", ".streamlit/config.toml"),
     ("app.py", "app.py"),
     ("smartroad", "smartroad"),
     ("samples", "samples"),
