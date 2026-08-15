@@ -63,3 +63,6 @@ DASTUR_KODI.txt
 
 # Claude Code lokal sozlamalari (launch.json ulashiladi)
 .claude/settings.local.json
+
+# Deck uchun skrinshotlar — Claude Design'ga qo'lda yuklanadi
+deploy/deck_assets/
