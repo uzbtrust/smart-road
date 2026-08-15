@@ -118,7 +118,7 @@ window.SR_COPY = {
         { name: "Dostonbek Abdurakhmonov", role: "dasturiy taʼminot",
           paras: ["Kod, oʻqitish quvuri, geometriya va ilova."] },
         { name: "Muhammadamin Shavkatov", role: "junior dasturchi",
-          paras: ["Model ustidagi ishda yordam berdi. Quvurni oʻrganmoqda."] },
+          paras: ["Model ustidagi ishda yordam berdi."] },
       ],
     },
     s8: {
@@ -243,7 +243,7 @@ window.SR_COPY = {
         { name: "Достонбек Абдурахмонов", role: "программное обеспечение",
           paras: ["Код, конвейер обучения, геометрия и приложение."] },
         { name: "Мухаммадамин Шавкатов", role: "junior-разработчик",
-          paras: ["Помогал в работе над моделью. Осваивает пайплайн."] },
+          paras: ["Помогал в работе над моделью."] },
       ],
     },
     s8: {
@@ -368,7 +368,7 @@ window.SR_COPY = {
         { name: "Dostonbek Abdurakhmonov", role: "software",
           paras: ["The code, the training pipeline, the geometry and the application."] },
         { name: "Muhammadamin Shavkatov", role: "junior developer",
-          paras: ["Assisted with the work on the model. Learning the pipeline."] },
+          paras: ["Assisted with the work on the model."] },
       ],
     },
     s8: {
