@@ -228,7 +228,7 @@
         el("h2", { style: { fontSize: "var(--t-h1)", letterSpacing: "-0.024em", lineHeight: 1.1, margin: 0 } }, s.h2),
         el("p", { style: { margin: 0, fontSize: "var(--t-small)", color: "var(--ink-2)", lineHeight: "var(--lh-body)" } }, s.sub)),
       el("div", { class: "g-75 g-75-start" },
-        S.videoBlock("assets/demo-poster.jpg", null, s.playLabel, "smart_road_demo.mp4"),
+        S.videoBlock("assets/demo-poster.jpg", "assets/smart_road_demo.mp4", s.playLabel, "smart_road_demo.mp4"),
         el("div", {},
           el("h3", { style: Object.assign({}, S.LABEL, { margin: "0 0 var(--sp-6)" }) }, s.noticeHead),
           el("ol", { style: { margin: 0, padding: 0, listStyle: "none", display: "grid", gap: "var(--sp-6)" } },

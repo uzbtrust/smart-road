@@ -117,6 +117,8 @@ window.SR_COPY = {
           paras: ["PCI ni qoʻlda oʻlchash — bu tizim tekshiriladigan yagona haqiqat manbai. Yangizamon koʻchasining boʻlaklari lenta bilan, nuqson turi va darajasi boʻyicha ular tomonidan oʻlchangan. Model qanchalik yaxshi ishlayotganini aytadigan raqamlar shu oʻlchovlardan chiqadi."] },
         { name: "Dostonbek Abdurakhmonov", role: "dasturiy taʼminot",
           paras: ["Kod, oʻqitish quvuri, geometriya va ilova."] },
+        { name: "Muhammadamin Shavkatov", role: "junior dasturchi",
+          paras: ["Ishga yordamchi sifatida qatnashadi va quvurni oʻrganmoqda."] },
       ],
     },
     s8: {
@@ -240,6 +242,8 @@ window.SR_COPY = {
           paras: ["Ручное определение PCI — единственный источник истины, по которому проверяется эта система. Участки улицы Янгизамон измерены ими рулеткой, с определением типа и степени тяжести каждого дефекта. Числа, которые говорят, насколько хорошо работает модель, берутся именно из этих измерений."] },
         { name: "Достонбек Абдурахмонов", role: "программное обеспечение",
           paras: ["Код, конвейер обучения, геометрия и приложение."] },
+        { name: "Мухаммадамин Шавкатов", role: "junior-разработчик",
+          paras: ["Участвует в работе как помощник и осваивает пайплайн."] },
       ],
     },
     s8: {
@@ -363,6 +367,8 @@ window.SR_COPY = {
           paras: ["Measuring PCI by hand is the only source of truth this system is checked against. The sections of Yangizamon street were measured by them with a tape, by distress type and severity. The numbers that say how well the model performs come from those measurements."] },
         { name: "Dostonbek Abdurakhmonov", role: "software",
           paras: ["The code, the training pipeline, the geometry and the application."] },
+        { name: "Muhammadamin Shavkatov", role: "junior developer",
+          paras: ["Works on the project in a supporting role and is learning the pipeline."] },
       ],
     },
     s8: {
