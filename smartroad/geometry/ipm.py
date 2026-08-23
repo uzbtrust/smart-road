@@ -214,6 +214,19 @@ class Camera:
 
     # ----------------------------------------------------------- measurement
 
+    def lateral_m_per_px(self, v):
+        """Ground metres per pixel *across* the road at row v.
+
+        Width is measured across a crack, not along it, so this is the scale a
+        width measurement needs -- and it is not the square root of
+        `pixel_area_m2`, because a pixel on the road is foreshortened: it covers
+        far more ground forward than sideways.
+
+        From `ground_from_pixel`, X = scale(v) * (u - cx) / focal_px, so one
+        column of pixels is scale(v) / focal_px metres wide on the road.
+        """
+        return self._scale(v) / self.focal_px
+
     def pixel_area_m2(self, v):
         """Ground area of one pixel at row v: scale^3 / (height * focal^2)."""
         scale = self._scale(v)
