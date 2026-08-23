@@ -1,0 +1,106 @@
+{
+  "video": "yangizamon_2026-08-03_fwd_pass2_iphone.mov",
+  "measured_at": "2026-08-24 03:51",
+  "settings": {
+    "every_s": 1.0,
+    "section_m": 300.0,
+    "severity": "medium",
+    "sky_cut_off": 0.45,
+    "effective_band_m": [
+      3.0,
+      6.83
+    ]
+  },
+  "frames": 286,
+  "detections": 631,
+  "by_class": {
+    "longitudinal_transverse_crack": 388,
+    "weathering_raveling": 94,
+    "patching": 74,
+    "alligator_crack": 34,
+    "marking_manhole": 27,
+    "pothole": 8,
+    "lane_shoulder_drop_off": 4,
+    "block_crack": 2
+  },
+  "seconds": 67.3,
+  "coverage": {
+    "span_m": 1810.692,
+    "covered_m": 810.723,
+    "gap_m": 999.969,
+    "coverage_fraction": 0.448,
+    "largest_gap_m": 7.162
+  },
+  "sections": [
+    {
+      "index": 1,
+      "start_m": 5.9,
+      "end_m": 305.9,
+      "frames": 37,
+      "area_m2": 1006.6,
+      "coverage": 0.44,
+      "pci": 86.1,
+      "rating": "Good"
+    },
+    {
+      "index": 2,
+      "start_m": 305.9,
+      "end_m": 605.9,
+      "frames": 60,
+      "area_m2": 1164.8,
+      "coverage": 0.501,
+      "pci": 85.3,
+      "rating": "Good"
+    },
+    {
+      "index": 3,
+      "start_m": 605.9,
+      "end_m": 905.9,
+      "frames": 33,
+      "area_m2": 936.7,
+      "coverage": 0.414,
+      "pci": 81.8,
+      "rating": "Satisfactory"
+    },
+    {
+      "index": 4,
+      "start_m": 905.9,
+      "end_m": 1205.9,
+      "frames": 81,
+      "area_m2": 1110.8,
+      "coverage": 0.474,
+      "pci": 77.3,
+      "rating": "Satisfactory"
+    },
+    {
+      "index": 5,
+      "start_m": 1205.9,
+      "end_m": 1505.9,
+      "frames": 33,
+      "area_m2": 942.5,
+      "coverage": 0.418,
+      "pci": 84.5,
+      "rating": "Satisfactory"
+    },
+    {
+      "index": 6,
+      "start_m": 1505.9,
+      "end_m": 1805.9,
+      "frames": 34,
+      "area_m2": 945.7,
+      "coverage": 0.419,
+      "pci": 65.2,
+      "rating": "Fair"
+    },
+    {
+      "index": 7,
+      "start_m": 1805.9,
+      "end_m": 1816.6,
+      "frames": 7,
+      "area_m2": 97.9,
+      "coverage": 1.0,
+      "pci": 100.0,
+      "rating": "Good"
+    }
+  ]
+}
