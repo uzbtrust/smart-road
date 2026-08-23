@@ -189,7 +189,19 @@ def pci_from_detections(detections: Sequence, camera: Camera, *, severity: str,
     quantities, area_m2, excluded = quantify(
         detections, camera, severity=severity, class_names=class_names,
         roi=roi, near_m=near_m, far_m=far_m)
+    return pci_from_quantities(quantities, area_m2, excluded)
 
+
+def pci_from_quantities(quantities: Sequence[Quantity], area_m2: float,
+                        excluded: dict[str, int] | None = None) -> FrameAssessment:
+    """Run ASTM's deduct arithmetic over quantities that are already metric.
+
+    Split out from `pci_from_detections` because a road section aggregates
+    quantities from many frames before grading them, and the correction
+    iteration must not exist twice: two copies drift, and the one nobody is
+    looking at is the one that ends up in a report.
+    """
+    excluded = excluded or {}
     deducts = sorted(
         (deduct_value(q.distress, q.severity, imperial_density(q.density_pct, q.distress))
          for q in quantities if q.density_pct > 0),
@@ -198,7 +210,7 @@ def pci_from_detections(detections: Sequence, camera: Camera, *, severity: str,
 
     if not deducts:
         return FrameAssessment(100.0, rate(100.0)[0], 0.0, 0, area_m2,
-                               quantities, [], excluded)
+                               list(quantities), [], excluded)
 
     m = allowable_deduct_count(deducts[0])
     whole = int(m)
@@ -215,4 +227,5 @@ def pci_from_detections(detections: Sequence, camera: Camera, *, severity: str,
             for qi in range(1, q + 1)
         )
     pci = max(0.0, 100.0 - cdv)
-    return FrameAssessment(pci, rate(pci)[0], cdv, q, area_m2, quantities, deducts, excluded)
+    return FrameAssessment(pci, rate(pci)[0], cdv, q, area_m2,
+                           list(quantities), deducts, excluded)
