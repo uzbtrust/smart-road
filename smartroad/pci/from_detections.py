@@ -202,8 +202,13 @@ def pci_from_quantities(quantities: Sequence[Quantity], area_m2: float,
     looking at is the one that ends up in a report.
     """
     excluded = excluded or {}
+    # quantify() has already turned pothole area into an equivalent count, so
+    # imperial_density must not divide by 0.5 m2 a second time: doing so
+    # doubled every pothole density (one small hole on 720p graded PCI 20.6
+    # at medium severity instead of 38.9).
     deducts = sorted(
-        (deduct_value(q.distress, q.severity, imperial_density(q.density_pct, q.distress))
+        (deduct_value(q.distress, q.severity,
+                      imperial_density(q.density_pct, q.distress, potholes_as_area=False))
          for q in quantities if q.density_pct > 0),
         reverse=True,
     )[:MAX_DEDUCTS]

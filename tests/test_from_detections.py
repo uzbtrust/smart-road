@@ -141,6 +141,21 @@ class TestQuantify:
                      near_m=NEAR, far_m=FAR)[0][0]
         assert q.amount == 1.0
 
+    def test_a_pothole_is_converted_to_a_count_only_once(self):
+        """quantify() already divides by 0.5 m2; the deduct lookup must not again."""
+        from smartroad.pci.engine import deduct_value
+        from smartroad.pci.astm import SQ_M_PER_SQ_FT
+
+        x1, y1, x2, y2 = box_for_ground_rect(-0.05, 0.05, 5.0, 5.1)
+        det = Detection(x1, y1, x2, y2, 0.9, 4)
+        quantities, area, _ = quantify([det], CAM, severity="medium",
+                                       class_names=NAMES, near_m=NEAR, far_m=FAR)
+        density_per_ft2 = 1.0 / area * 100.0 * SQ_M_PER_SQ_FT
+        result = pci_from_detections([det], CAM, severity="medium",
+                                     class_names=NAMES, near_m=NEAR, far_m=FAR)
+        assert result.deduct_values[0] == pytest.approx(
+            deduct_value("potholes", "medium", density_per_ft2))
+
     def test_detections_of_one_class_are_pooled(self):
         a = Detection(*box_for_ground_rect(-1.0, 0.0, 5.0, 6.0), 0.9, 3)
         b = Detection(*box_for_ground_rect(0.5, 1.5, 6.0, 7.0), 0.8, 3)

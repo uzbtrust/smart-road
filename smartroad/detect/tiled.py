@@ -163,6 +163,11 @@ def _touches_seam(x1: float, y1: float, x2: float, y2: float,
     )
 
 
+def rgb_to_bgr(image: np.ndarray) -> np.ndarray:
+    """Reverse the channel order, the form Ultralytics expects of a numpy array."""
+    return np.ascontiguousarray(image[..., ::-1])
+
+
 def detect_tiled(model, image: np.ndarray, *, tile: int = DEFAULT_TILE,
                  overlap: float = DEFAULT_OVERLAP,
                  roi: tuple[int, int, int, int] | None = None,
@@ -175,6 +180,11 @@ def detect_tiled(model, image: np.ndarray, *, tile: int = DEFAULT_TILE,
     checkpoint: it was trained against a ten-class `data.yaml` whose last two
     classes have no examples at all, so those two heads are untrained and can
     fire on anything. Pass ``range(8)`` to drop them.
+
+    `image` is RGB, as PIL and the rest of this package produce it. Ultralytics
+    reads a numpy array as BGR, OpenCV's order and the order it trained in, so
+    each crop is flipped before it is handed over. Passing RGB straight through
+    showed the model red and blue swapped relative to its training data.
     """
     if image.ndim != 3:
         raise ValueError(f"expected an HxWx3 image, got shape {image.shape}")
@@ -186,7 +196,7 @@ def detect_tiled(model, image: np.ndarray, *, tile: int = DEFAULT_TILE,
 
     for start in range(0, len(boxes), batch):
         chunk = boxes[start:start + batch]
-        crops = [image[y0:y1, x0:x1] for x0, y0, x1, y1 in chunk]
+        crops = [rgb_to_bgr(image[y0:y1, x0:x1]) for x0, y0, x1, y1 in chunk]
         results = model.predict(crops, imgsz=tile, conf=conf, device=device,
                                 verbose=False)
         for (x0, y0, x1, y1), res in zip(chunk, results):

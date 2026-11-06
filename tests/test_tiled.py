@@ -192,6 +192,21 @@ class TestDetectTiled:
         with pytest.raises(ValueError):
             detect_tiled(MarkFinder(), np.zeros((10, 10)))
 
+    def test_crops_reach_the_model_as_bgr(self):
+        """Ultralytics reads numpy input as BGR; an RGB frame must be flipped."""
+        seen = []
+
+        class Recorder(MarkFinder):
+            def predict(self, crops, **kwargs):
+                seen.extend(crops)
+                return super().predict(crops, **kwargs)
+
+        frame = np.zeros((640, 640, 3), dtype=np.uint8)
+        frame[..., 0] = 200                      # pure red in RGB
+        detect_tiled(Recorder(), frame, tile=640)
+        assert seen and all((c[..., 2] == 200).all() and (c[..., 0] == 0).all()
+                            for c in seen)
+
 
 class TestRoadRoi:
     def test_keeps_the_bottom_of_the_frame(self):

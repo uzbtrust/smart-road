@@ -20,7 +20,7 @@ import numpy as np
 import streamlit as st
 from PIL import Image, ImageDraw
 
-from smartroad.detect.tiled import Detection, detect_tiled, road_roi
+from smartroad.detect.tiled import Detection, detect_tiled, rgb_to_bgr, road_roi
 from smartroad.geometry.ipm import Camera
 from smartroad.pci.engine import RATING_SCALE
 from smartroad.pci.from_detections import pci_from_detections
@@ -204,7 +204,8 @@ def _detect(frame: np.ndarray, conf: float, tiled: bool, overlap: float,
     if tiled:
         return detect_tiled(model, frame, tile=640, overlap=overlap, roi=roi,
                             conf=conf, classes=TRAINED_CLASSES, device=pick_device())
-    res = model.predict(frame, imgsz=640, conf=conf, device=pick_device(),
+    # frame is RGB; Ultralytics reads numpy arrays as BGR.
+    res = model.predict(rgb_to_bgr(frame), imgsz=640, conf=conf, device=pick_device(),
                         classes=list(TRAINED_CLASSES), verbose=False)[0]
     out = [Detection(*map(float, b.xyxy[0].tolist()), float(b.conf), int(b.cls))
            for b in res.boxes]
