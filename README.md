@@ -112,7 +112,7 @@ python scripts/download_models.py   # fetches weights from Hugging Face
 streamlit run app.py                # http://localhost:8501
 ```
 
-`pytest tests -q` runs 181 tests; the PCI, geometry and tiling halves need
+`pytest tests -q` runs 298 tests; the PCI, geometry and tiling halves need
 neither torch nor a GPU.
 
 ### The app
@@ -157,6 +157,25 @@ deep, so they overlap and adding them would count the same distress twice.*
   to every detection. Sweeping it shows the range the answer really occupies.
   On the bundled Tehran frame `attain_tehran__Attain_SMP_WS_v2_000800.jpg`:
   **51.5 → 36.5 → 20.5** for low → medium → high.
+
+### Batch grading, with a score for every second
+
+For long drives, or many of them, two tools grade footage outside the browser
+with the app's own pipeline and write the scores to an Excel workbook:
+
+```bash
+python batch_gui.py                                       # desktop window
+python batch_pci.py videos/ -o survey.xlsx --per-second   # the same, headless
+```
+
+The window takes files or whole folders, the same camera and detector settings
+as the app, and fills a table with each second's PCI while it grades. With
+*Per-second sheet* ticked the workbook gets one row per second of every clip --
+at the default one frame a second, second *k* is scored from the frame at
+*k* + 0.5 s. Sampling less often leaves the seconds in between empty rather
+than inventing them. The workbook also has Summary, Frames, Distresses and
+Settings sheets, and is saved after every video, so a stopped batch keeps what
+it graded.
 
 ## What is actually hard here
 
@@ -217,6 +236,8 @@ figures in the process. Full working:
 
 ```
 app.py                     Streamlit interface
+batch_gui.py               desktop window: grade many videos, PCI per second to Excel
+batch_pci.py               the same from the command line
 smartroad/
   pci/
     engine.py              deduct values, CDV iteration, PCI, ASTM rating scale
@@ -233,7 +254,7 @@ tools/
   gen_curves.py            regenerates curves.py from the upstream MIT source
   kaggle_fetch.py          resumable dataset download
 scripts/download_models.py
-tests/                     181 tests
+tests/                     298 tests
 ```
 
 ## Dataset
