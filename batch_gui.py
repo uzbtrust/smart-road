@@ -64,6 +64,7 @@ class Job:
     per_second: bool
     detections: bool
     save_frames: str
+    gps: bool
 
 
 class App:
@@ -78,6 +79,7 @@ class App:
         self.meta: dict = {}
         self.names: dict[int, str] = {}
         self.model = None
+        self.ocr = None                   # OCR engine, made on first use
         self.events: queue.Queue = queue.Queue()
         self.stop = threading.Event()
         self.worker: threading.Thread | None = None
@@ -97,6 +99,7 @@ class App:
         self.save_excel = BooleanVar(value=True)
         self.per_second = BooleanVar(value=True)
         self.detections = BooleanVar(value=False)
+        self.gps = BooleanVar(value=False)
         self.save_frames = StringVar(value="none")
         self.recursive = BooleanVar(value=False)
         self.out_path = StringVar(
@@ -185,6 +188,8 @@ class App:
         self.out_btn.pack(side="left", padx=4)
         ttk.Checkbutton(box, text="Per-second sheet (one PCI per second of footage)",
                         variable=self.per_second).pack(anchor="w")
+        ttk.Checkbutton(box, text="GPS coordinates (from the video, or printed on it)",
+                        variable=self.gps).pack(anchor="w")
         ttk.Checkbutton(box, text="Detections sheet (every box)",
                         variable=self.detections).pack(anchor="w")
         row = ttk.Frame(box)
@@ -198,10 +203,11 @@ class App:
         box.grid(row=0, column=0, sticky="nsew")
         box.rowconfigure(0, weight=1)
         box.columnconfigure(0, weight=1)
-        cols = ("video", "second", "pci", "rating", "low", "high", "distress", "boxes")
+        cols = ("video", "second", "pci", "rating", "low", "high", "distress", "boxes",
+                "gps")
         heads = ("Video", "Second", "PCI", "Rating", "if low", "if high",
-                 "Main distress", "Boxes")
-        widths = (150, 60, 55, 100, 55, 55, 200, 50)
+                 "Main distress", "Boxes", "Lat, Lon")
+        widths = (110, 50, 45, 90, 45, 45, 125, 40, 165)
         self.table = ttk.Treeview(box, columns=cols, show="headings")
         for c, h, w in zip(cols, heads, widths):
             self.table.heading(c, text=h)
@@ -209,9 +215,11 @@ class App:
         for _, label, colour in bp.RATING_SCALE:
             self.table.tag_configure(label, background=colour, foreground=bp.ink_for(colour))
         scroll = ttk.Scrollbar(box, orient="vertical", command=self.table.yview)
-        self.table.configure(yscrollcommand=scroll.set)
+        across = ttk.Scrollbar(box, orient="horizontal", command=self.table.xview)
+        self.table.configure(yscrollcommand=scroll.set, xscrollcommand=across.set)
         self.table.grid(row=0, column=0, sticky="nsew")
         scroll.grid(row=0, column=1, sticky="ns")
+        across.grid(row=1, column=0, sticky="ew")
 
     def _build_log(self, parent) -> None:
         box = ttk.LabelFrame(parent, text="Log", padding=6)
@@ -302,11 +310,25 @@ class App:
                     "Replace?", f"{out.name} already exists. Replace it?"):
                 return
             out.parent.mkdir(parents=True, exist_ok=True)
+        if self.gps.get() and not (bp.exiftool() and bp.overlay_gps.available()):
+            missing = []
+            if not bp.exiftool():
+                missing.append("• GPS tracks inside the video need ExifTool "
+                               "(https://exiftool.org; Linux: apt install "
+                               "libimage-exiftool-perl).")
+            if not bp.overlay_gps.available():
+                missing.append("• Coordinates printed on the picture need OCR: "
+                               + bp.overlay_gps.INSTALL_HINT)
+            if not messagebox.askokcancel(
+                    "GPS sources missing",
+                    "\n".join(missing) + "\n\nVideos whose GPS needs these will get "
+                    "blank coordinates. Grade anyway?"):
+                return
         if self.per_second.get() and s.every_s > 1:
             self._say(f"Sampling every {s.every_s:g} s: seconds between samples "
                       "will be empty in the per-second sheet.")
         job = Job(list(self.videos), s, out, self.per_second.get(),
-                  self.detections.get(), self.save_frames.get())
+                  self.detections.get(), self.save_frames.get(), self.gps.get())
         self.last_job = job
         self.results = []
         self.table.delete(*self.table.get_children())
@@ -339,6 +361,8 @@ class App:
             argv.append("--no-tiled")
         if job.per_second:
             argv.append("--per-second")
+        if job.gps:
+            argv.append("--gps")
         if job.detections:
             argv.append("--detections")
         if job.save_frames != "none":
@@ -359,7 +383,8 @@ class App:
             self.meta = {"date": datetime.now().strftime("%Y-%m-%d %H:%M"),
                          "command": self._command(job), "commit": bp.git_commit(),
                          "weights": str(self.weights), "device": self.device,
-                         "versions": bp._versions()}
+                         "versions": bp._versions(),
+                         "exiftool": bp.exiftool_version() if job.gps else None}
             planned = [bp._planned_frames(p, job.settings) for p, _ in job.videos]
             total, done = max(1, sum(planned)), 0
             frames_dir = (job.out.with_name(f"{job.out.stem}_frames")
@@ -372,8 +397,23 @@ class App:
                 emit(("log", f"[{k}/{len(job.videos)}] {label}"
                       + (f"  ({n} frames)" if n else "")))
 
+                reader = None
+                if job.gps:
+                    bp.attach_gps(v)
+                    if bp.wants_overlay(v) and bp.overlay_gps.available():
+                        if self.ocr is None:
+                            self.ocr = bp.overlay_gps.OverlayReader()
+                        reader = self.ocr
+                        emit(("log", f"      GPS: {v.gps_note}; reading the "
+                                     "coordinates printed on the frames"))
+                    else:
+                        emit(("log", f"      GPS: {v.gps_note}"))
+
                 def tick(i: int, v=v, k=k, n=n, base=done) -> None:
-                    emit(("frame", v.label, v.frames[-1], job.settings.severity))
+                    fr = v.frames[-1]
+                    fix = (bp.Fix(fr.t_s, *fr.overlay) if fr.overlay
+                           else v.gps.at(fr.t_s) if v.gps else None)
+                    emit(("frame", v.label, v.frames[-1], job.settings.severity, fix))
                     emit(("progress", base + i, total,
                           f"{v.label}: frame {i} of {n or '?'}"))
                     if self.stop.is_set():
@@ -382,10 +422,14 @@ class App:
                 try:
                     bp.grade_video(v, self.model, self.names, job.settings, self.device,
                                    video_no=k, save_frames=job.save_frames,
-                                   frames_dir=frames_dir, progress=tick)
+                                   frames_dir=frames_dir, progress=tick,
+                                   overlay=reader)
                 except KeyboardInterrupt:
                     v.status = f"Interrupted after {len(v.frames)} frames"
                     stopped = True
+                if reader is not None:
+                    bp.finish_overlay_gps(v)
+                    emit(("log", f"      GPS: {v.gps_note}"))
                 done += len(v.frames)
 
                 st = bp.video_stats(v, job.settings.severity)
@@ -409,6 +453,7 @@ class App:
         def write(path: Path) -> None:
             bp.write_workbook(path, self.results, job.settings, self.meta, self.names,
                               with_detections=job.detections, per_second=job.per_second,
+                              gps=job.gps,
                               warn=lambda m: self.events.put(("log", m.strip())))
         try:
             write(out)
@@ -434,6 +479,14 @@ class App:
             return
         job.per_second = self.per_second.get()
         job.detections = self.detections.get()
+        job.gps = self.gps.get()
+        if job.gps:                       # ticked after grading: read it now
+            self.status.set("Reading GPS…")
+            self.root.update_idletasks()
+            for v in self.results:
+                if v.gps_note is None:
+                    bp.attach_gps(v)
+            self.meta["exiftool"] = bp.exiftool_version()
         try:
             saved = self._save(self._resolved_out(path), job)
         except Exception as exc:          # noqa: BLE001
@@ -453,7 +506,7 @@ class App:
     def _handle(self, ev) -> None:
         kind = ev[0]
         if kind == "frame":
-            _, label, fr, severity = ev
+            _, label, fr, severity, fix = ev
             a = fr.graded[severity]
             pairs = bp.deducts_by_distress(a)
             main = (bp.DISTRESS_PRETTY.get(pairs[0][0].distress, pairs[0][0].distress)
@@ -461,7 +514,8 @@ class App:
             row = self.table.insert("", "end", tags=(a.rating,), values=(
                 label, f"{int(fr.t_s)}–{int(fr.t_s) + 1}", f"{a.pci:.1f}", a.rating,
                 f"{fr.graded['low'].pci:.1f}", f"{fr.graded['high'].pci:.1f}",
-                main, len(fr.detections)))
+                main, len(fr.detections),
+                f"{fix.lat:.6f}, {fix.lon:.6f}" if fix else ""))
             self.table.see(row)
         elif kind == "progress":
             _, done, total, text = ev

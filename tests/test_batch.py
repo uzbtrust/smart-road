@@ -85,3 +85,53 @@ def test_workbook_has_the_per_second_sheet(tmp_path):
     assert wb["Per second"].max_row == 3                 # header + two seconds
     assert "Per second" not in load_workbook(
         bp.write_workbook(tmp_path / "c.xlsx", [_video([0.5])], S, {}, NAMES)).sheetnames
+
+
+def test_gps_columns_follow_the_time_column(tmp_path):
+    from openpyxl import load_workbook
+    from smartroad.survey.embedded_gps import Fix, GpsTrack
+
+    v = _video([0.5, 1.5, 2.5])
+    v.gps = GpsTrack((Fix(0.0, 41.0, 69.0), Fix(3.0, 41.003, 69.0)), "test track")
+    v.gps_note = "test track, 2 fixes"
+    out = bp.write_workbook(tmp_path / "g.xlsx", [v], S, {}, NAMES,
+                            per_second=True, gps=True)
+    wb = load_workbook(out)
+    head = [c.value for c in wb["Frames"][1]]
+    assert head[2:6] == ["t (s)", "Latitude", "Longitude", "Map"]
+    first = [c.value for c in wb["Frames"][2]]
+    assert first[3] == pytest.approx(41.0005)
+    link = wb["Frames"].cell(2, 6).hyperlink.target
+    assert link.startswith("https://www.google.com/maps?q=41.0005")
+    per = [c.value for c in wb["Per second"][1]]
+    assert per[3:7] == ["Sampled at (s)", "Latitude", "Longitude", "Map"]
+    summary = {c.value: i for i, c in enumerate(wb["Summary"][1])}
+    assert wb["Summary"][2][summary["GPS"]].value == "test track, 2 fixes"
+
+
+def test_gps_off_leaves_the_sheets_alone(tmp_path):
+    from openpyxl import load_workbook
+
+    out = bp.write_workbook(tmp_path / "n.xlsx", [_video([0.5])], S, {}, NAMES)
+    assert "Latitude" not in [c.value for c in load_workbook(out)["Frames"][1]]
+
+
+def test_coordinates_read_off_the_frames_become_the_track():
+    v = _video([0.5, 1.5, 2.5])
+    v.gps_note = "no GPS found in this file"
+    v.frames[0].overlay = (-12.0351, 13.9553)
+    v.frames[2].overlay = (-12.0353, 13.9553)          # frame 2 was not legible
+    bp.finish_overlay_gps(v)
+    assert "2 of 3 frames" in v.gps_note
+    assert v.gps.at(1.5).lat == pytest.approx(-12.0352)
+
+
+def test_a_track_in_the_file_is_preferred_to_the_picture():
+    from smartroad.survey.embedded_gps import Fix, GpsTrack
+
+    v = _video([0.5])
+    assert bp.wants_overlay(v)
+    v.gps = GpsTrack((Fix(0.0, 41.0, 69.0),), "one location for the whole clip")
+    assert bp.wants_overlay(v)                          # one point is not a track
+    v.gps = GpsTrack((Fix(0.0, 41.0, 69.0), Fix(1.0, 41.0001, 69.0)), "embedded")
+    assert not bp.wants_overlay(v)

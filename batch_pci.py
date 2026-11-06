@@ -26,6 +26,9 @@ Frames      one row per sampled frame: PCI at the chosen severity and at all
             three, the main distress, the deduct chain, boxes, surface measured
 Distresses  one row per distress per frame: boxes, quantity, density, deduct
 Detections  one row per detected box (only with --detections)
+            With --gps every sheet above also gets each row's latitude,
+            longitude and a map link: from the GPS the camera recorded in
+            the file, or else read off the frames by OCR
 Settings    every setting the scores depend on, and what the numbers are not
 
 The workbook is saved as the batch goes -- after every video while it is
@@ -67,6 +70,10 @@ from smartroad.pci.from_detections import (CLASS_TO_DISTRESS,  # noqa: E402
                                            inspected_area_m2,
                                            pci_from_detections)
 from smartroad.pci.from_survey import imperial_density  # noqa: E402
+from smartroad.survey import overlay_gps  # noqa: E402
+from smartroad.survey.embedded_gps import (Fix, GpsTrack,  # noqa: E402
+                                           exiftool, exiftool_version,
+                                           read_embedded_gps)
 from smartroad.survey.sections import effective_band  # noqa: E402
 from smartroad.survey.video import (VideoInfo, frame_times,  # noqa: E402
                                     iter_frames, probe_video)
@@ -302,6 +309,7 @@ class FrameResult:
     detections: list[Detection]
     graded: dict[str, FrameAssessment]           # by severity
     image: Path | None = None                    # annotated JPEG, if saved
+    overlay: tuple[float, float] | None = None   # (lat, lon) printed on the frame
 
 
 @dataclass
@@ -313,6 +321,8 @@ class VideoResult:
     frames: list[FrameResult] = field(default_factory=list)
     band_m: tuple[float, float] | None = None    # what the frames really measure
     seconds: float = 0.0
+    gps: GpsTrack | None = None                  # read from the video, if asked
+    gps_note: str | None = None                  # what was found, for the Summary
 
     @property
     def ok(self) -> bool:
@@ -418,8 +428,13 @@ def save_annotated(frames_dir: Path, video_no: int, v: VideoResult, fr: FrameRes
 def grade_video(v: VideoResult, model, names: dict[int, str], s: Settings,
                 device: str | None, *, video_no: int = 1, save_frames: str = "none",
                 frames_dir: Path | None = None,
-                progress: Callable[[int], None] | None = None) -> VideoResult:
+                progress: Callable[[int], None] | None = None,
+                overlay: "overlay_gps.OverlayReader | None" = None) -> VideoResult:
     """Sample, detect and grade one clip, filling in `v` as it goes.
+
+    With an `overlay` reader, the coordinates printed on each frame are read
+    too, from the same image that was graded; `finish_overlay_gps` turns them
+    into the clip's track afterwards.
 
     Filled in place rather than returned at the end, so that a Ctrl+C half way
     through still leaves the frames already graded where the caller can save
@@ -442,6 +457,11 @@ def grade_video(v: VideoResult, model, names: dict[int, str], s: Settings,
             dets = detect(model, frame, s, device)
             fr = FrameResult(len(v.frames) + 1, t, (w, h), dets,
                              grade_frame(dets, camera, roi, names, s))
+            if overlay is not None:
+                try:
+                    fr.overlay = overlay.read(image)
+                except Exception:     # noqa: BLE001 -- a bad read is a missing fix
+                    fr.overlay = None
             pci = fr.graded[s.severity].pci
             if save_frames == "all" and frames_dir:
                 fr.image = save_annotated(frames_dir, video_no, v, fr, image, names, s)
@@ -461,6 +481,49 @@ def grade_video(v: VideoResult, model, names: dict[int, str], s: Settings,
         v.status = f"Error: {type(exc).__name__}: {exc}"[:500]
     finally:
         v.seconds = time.perf_counter() - started
+    return v
+
+
+def attach_gps(v: VideoResult) -> VideoResult:
+    """Read the GPS the camera recorded into `v`; never fails the clip.
+
+    A clip without GPS is still graded -- its coordinates are left empty and
+    the Summary sheet says why.
+    """
+    try:
+        v.gps = read_embedded_gps(v.path)
+    except Exception as exc:          # noqa: BLE001 -- GPS is extra, not the grade
+        v.gps_note = f"could not read GPS: {type(exc).__name__}: {exc}"[:300]
+        return v
+    if v.gps:
+        n = len(v.gps.fixes)
+        v.gps_note = v.gps.source if v.gps.static else f"{v.gps.source}, {n} fixes"
+    elif exiftool():
+        v.gps_note = "no GPS found in this file"
+    else:
+        v.gps_note = ("no GPS read: ExifTool is not installed, and only a sidecar "
+                      ".SRT can be read without it")
+    return v
+
+
+def wants_overlay(v: VideoResult) -> bool:
+    """Read the picture only when the file gave no track of its own.
+
+    A track inside the file is the camera's own record, timed exactly; the
+    printed text is the same numbers after a trip through OCR. A single
+    location for the whole clip is no track at all, so it does not count.
+    """
+    return v.gps is None or v.gps.static
+
+
+def finish_overlay_gps(v: VideoResult) -> VideoResult:
+    """Make the coordinates read from the frames into `v`'s track."""
+    fixes = [Fix(f.t_s, *f.overlay) for f in v.frames if f.overlay]
+    track = overlay_gps.track_from_overlay(fixes, len(v.frames)) if fixes else None
+    if track:
+        v.gps, v.gps_note = track, track.source
+    elif v.frames:
+        v.gps_note = (v.gps_note or "no GPS found") + "; no coordinates legible in the picture"
     return v
 
 
@@ -815,7 +878,8 @@ def _detection_rows(results: Sequence[VideoResult], names: dict[int, str]):
                        _r(d.y2, 1), "yes" if d.on_seam else None]
 
 
-def _settings_rows(s: Settings, meta: dict, results: Sequence[VideoResult]):
+def _settings_rows(s: Settings, meta: dict, results: Sequence[VideoResult],
+                   gps: bool = False):
     ok = sum(1 for v in results if v.ok)
     failed = sum(1 for v in results if v.status.startswith("Error"))
     other = len(results) - ok - failed
@@ -859,6 +923,25 @@ def _settings_rows(s: Settings, meta: dict, results: Sequence[VideoResult]):
          "A request: the sky cut-off usually stops the search sooner. "
          "'Measured band' on the Summary sheet is what each clip really measured."),
         (None, None, None, None),
+        ("GPS", None, None, None),
+        ("GPS coordinates", "on" if gps else "off", "--gps",
+         "Read from each video: the track the camera recorded, a sidecar .SRT "
+         "beside it, or -- failing both -- the coordinates the camera printed on "
+         "the frames, by OCR. The Summary sheet says which, per video."
+         if gps else None),
+        *([("Read with", f"ExifTool {meta['exiftool']}" if meta.get("exiftool")
+            else "ExifTool not installed: sidecar .SRT only", None, None),
+           ("What a coordinate is", None, None,
+            "Where the camera was at that moment, interpolated between the camera's "
+            "own fixes. The road graded lies 3-15 m ahead of it and consumer GPS is "
+            "good to 3-5 m, so it locates a frame's stretch of road, not one crack. "
+            "Blank where the camera had no fix."),
+           ("Read from the picture", None, None,
+            "OCR on the text strip a dashcam prints, from the frame that was graded. "
+            "The text refreshes once a second, so a position may be up to a second "
+            "old; a fix that would need the vehicle above 250 km/h to reach its "
+            "neighbours is a misread and is dropped.")] if gps else []),
+        (None, None, None, None),
         ("GRADING", None, None, None),
         ("Severity", s.severity, "--severity",
          "Applied to every detection: the model does not predict severity. "
@@ -890,8 +973,9 @@ def _settings_rows(s: Settings, meta: dict, results: Sequence[VideoResult]):
     ]
 
 
-def _settings_sheet_rows(s: Settings, meta: dict, results: Sequence[VideoResult]):
-    for name, value, option, note in _settings_rows(s, meta, results):
+def _settings_sheet_rows(s: Settings, meta: dict, results: Sequence[VideoResult],
+                         gps: bool = False):
+    for name, value, option, note in _settings_rows(s, meta, results, gps):
         heading = bool(name and value is None and option is None and name.isupper())
         band = name if name in BANDS and value is not None else None
         yield [Styled(name, bold=heading, band=band, wrap=True) if name else None,
@@ -906,9 +990,59 @@ def _band_ranges():
         hi = lo
 
 
+GEO = [Col("Latitude", 11), Col("Longitude", 11), Col("Map", 7)]
+
+#: Where the coordinates go in each sheet: after the column holding the time.
+_TIME_COLUMN = {"Per second": "Sampled at (s)", "Frames": "t (s)",
+                "Distresses": "t (s)", "Detections": "t (s)"}
+
+
+def _geo_cells(v: VideoResult | None, t_s: float) -> list:
+    fix = v.gps.at(t_s) if v is not None and v.gps else None
+    if fix is None:
+        return [None, None, None]
+    return [round(fix.lat, 7), round(fix.lon, 7),
+            Styled("map", link=f"https://www.google.com/maps?q={fix.lat:.7f},{fix.lon:.7f}")]
+
+
+def _with_geo(title: str, cols: Sequence[Col], rows, results: Sequence[VideoResult]):
+    """Insert Latitude, Longitude and a map link after a sheet's time column.
+
+    Rows are matched to their video by label, which `collect_videos` keeps
+    unique. A second that was not sampled still has a position -- the vehicle
+    was somewhere -- so it is placed at its middle, where a sample would be.
+    """
+    by_label = {v.label: v for v in results}
+    at = [c.header for c in cols].index(_TIME_COLUMN[title]) + 1
+    new_cols = [*cols[:at], *GEO, *cols[at:]]
+
+    def gen():
+        for row in rows:
+            t = row[at - 1]
+            if t is None and title == "Per second":
+                t = row[1] + 0.5
+            row = list(row)
+            row[at:at] = _geo_cells(by_label.get(row[0]), t)
+            yield row
+    return new_cols, gen()
+
+
+def _with_gps_note(cols: Sequence[Col], rows, results: Sequence[VideoResult]):
+    """Add a GPS column to the Summary, before the path."""
+    at = len(cols) - 1
+    notes = iter([v.gps_note for v in results])
+
+    def gen():
+        for row in rows:
+            row = list(row)
+            row[at:at] = [next(notes)]
+            yield row
+    return [*cols[:at], Col("GPS", 40), *cols[at:]], gen()
+
+
 def write_workbook(path: Path, results: Sequence[VideoResult], s: Settings, meta: dict,
                    names: dict[int, str], *, with_detections: bool = False,
-                   per_second: bool = False,
+                   per_second: bool = False, gps: bool = False,
                    warn: Callable[[str], None] | None = None) -> Path:
     """Write the whole workbook to `path`, replacing it only once it is complete."""
     from openpyxl import Workbook
@@ -923,11 +1057,14 @@ def write_workbook(path: Path, results: Sequence[VideoResult], s: Settings, meta
     if with_detections:
         sheets.append(("Detections", DETECTIONS, _detection_rows(results, names), "E2"))
     for title, cols, rows, freeze in sheets:
+        if gps:
+            cols, rows = (_with_gps_note(cols, rows, results) if title == "Summary"
+                          else _with_geo(title, cols, rows, results))
         dropped = _sheet(wb, title, cols, rows, st, freeze=freeze)
         if dropped and warn:
             warn(f"      ! {title}: {dropped:,} rows did not fit in Excel's "
                  f"{EXCEL_ROWS:,}; grade fewer videos per workbook")
-    _sheet(wb, "Settings", SETTINGS, _settings_sheet_rows(s, meta, results), st,
+    _sheet(wb, "Settings", SETTINGS, _settings_sheet_rows(s, meta, results, gps), st,
            freeze="A2", filters=False)
 
     tmp = path.with_name(f"~{path.stem}.partial.xlsx")
@@ -959,7 +1096,7 @@ def _planned_frames(path: Path, s: Settings) -> int:
 def run_batch(videos: Sequence[tuple[Path, str]], model, names: dict[int, str],
               s: Settings, device: str | None, out: Path, *, meta: dict,
               save_frames: str = "none", with_detections: bool = False,
-              per_second: bool = False,
+              per_second: bool = False, gps: bool = False,
               stream=None) -> tuple[list[VideoResult], Path, bool]:
     """Grade every video, saving the workbook as it goes.
 
@@ -986,6 +1123,7 @@ def run_batch(videos: Sequence[tuple[Path, str]], model, names: dict[int, str],
     started = time.perf_counter()
     interrupted = False
     saved_at, save_cost = -float("inf"), 0.0
+    ocr = None                     # made once, on the first clip that needs it
 
     def save(final: bool) -> None:
         nonlocal out, saved_at, save_cost
@@ -993,13 +1131,13 @@ def run_batch(videos: Sequence[tuple[Path, str]], model, names: dict[int, str],
         warn = say if final else None
         try:
             write_workbook(out, results, s, meta, names, with_detections=with_detections,
-                           per_second=per_second, warn=warn)
+                           per_second=per_second, gps=gps, warn=warn)
         except PermissionError:
             alt = out.with_name(f"{out.stem}_{datetime.now():%H%M%S}{out.suffix}")
             say(f"      ! {out.name} is open in another program; saving to {alt.name}")
             out = alt
             write_workbook(out, results, s, meta, names, with_detections=with_detections,
-                           per_second=per_second, warn=warn)
+                           per_second=per_second, gps=gps, warn=warn)
         saved_at = time.perf_counter()
         save_cost = saved_at - t
 
@@ -1019,12 +1157,25 @@ def run_batch(videos: Sequence[tuple[Path, str]], model, names: dict[int, str],
             elif i % 50 == 0:
                 say(line)
 
+        reader = None
+        if gps:
+            attach_gps(v)
+            if wants_overlay(v) and overlay_gps.available():
+                if ocr is None:
+                    ocr = overlay_gps.OverlayReader()
+                reader = ocr
+                say(f"      GPS: {v.gps_note}; reading the coordinates printed on the frames")
+            else:
+                say(f"      GPS: {v.gps_note}")
         try:
             grade_video(v, model, names, s, device, video_no=k, save_frames=save_frames,
-                        frames_dir=frames_dir, progress=tick)
+                        frames_dir=frames_dir, progress=tick, overlay=reader)
         except KeyboardInterrupt:
             v.status = f"Interrupted after {len(v.frames)} frames"
             interrupted = True
+        if reader is not None:
+            finish_overlay_gps(v)
+            say(f"      GPS: {v.gps_note}")
         if tty and v.frames:                       # end the line the ticks redrew
             print(file=stream)
         done_before += len(v.frames)
@@ -1139,6 +1290,11 @@ def build_parser() -> argparse.ArgumentParser:
     g.add_argument("--per-second", action="store_true",
                    help="add a sheet with one PCI per second of footage "
                         "(exact at the default --every-s 1)")
+    g.add_argument("--gps", action="store_true",
+                   help="add each frame's latitude and longitude: from the GPS track the "
+                        "camera recorded in the video (needs ExifTool), a DJI sidecar "
+                        ".SRT, or else the coordinates printed on the frames (needs "
+                        "'pip install rapidocr_onnxruntime')")
     g.add_argument("--detections", action="store_true",
                    help="add a sheet listing every detected box")
     g.add_argument("--save-frames", choices=("none", "worst", "all"), default="none",
@@ -1167,6 +1323,13 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.weights and not args.weights.is_file():
         ap.error(f"--weights: no such file: {args.weights}")
 
+    if args.gps and not exiftool():
+        print("  ! --gps: ExifTool is not installed, so tracks inside the video cannot "
+              "be read.\n    Install it from https://exiftool.org (Linux: apt install "
+              "libimage-exiftool-perl)")
+    if args.gps and not overlay_gps.available():
+        print("  ! --gps: OCR is not installed, so coordinates printed on the frames "
+              f"cannot be read.\n    {overlay_gps.INSTALL_HINT}")
     videos, unmatched = collect_videos(args.inputs, recursive=args.recursive)
     for raw in unmatched:
         print(f"  no videos in or matching: {raw}")
@@ -1191,12 +1354,13 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     meta = {"date": datetime.now().strftime("%Y-%m-%d %H:%M"), "command": _command(argv),
             "commit": git_commit(), "weights": str(weights), "device": device,
-            "versions": _versions()}
+            "versions": _versions(), "exiftool": exiftool_version() if args.gps else None}
     try:
         results, out, interrupted = run_batch(videos, model, names, s, device, out,
                                               meta=meta, save_frames=args.save_frames,
                                               with_detections=args.detections,
-                                              per_second=args.per_second)
+                                              per_second=args.per_second,
+                                              gps=args.gps)
     except KeyboardInterrupt:
         # Only reachable while the workbook itself is being written; the
         # previous save is untouched, because it is replaced only when whole.

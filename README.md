@@ -177,6 +177,27 @@ than inventing them. The workbook also has Summary, Frames, Distresses and
 Settings sheets, and is saved after every video, so a stopped batch keeps what
 it graded.
 
+Tick *GPS coordinates* (or pass `--gps`) and every row gets a latitude,
+longitude and a map link, read from the GPS track the camera recorded inside the
+video -- GoPro, DJI, Novatek-based dashcams, Garmin, Insta360 and most others, or
+a phone's single location for the clip. Reading those formats needs
+[ExifTool](https://exiftool.org) (`apt install libimage-exiftool-perl`,
+`brew install exiftool`, or the Windows executable on the PATH); a DJI `.SRT`
+beside the video is read without it. If the file holds no track -- it was
+trimmed, re-encoded or sent through a messaging app -- the coordinates many
+dashcams print on the picture (`84 KM/H S12.035136 E13.955326 ...` on a Viofo)
+are read off each graded frame by OCR, which needs
+`pip install rapidocr_onnxruntime`. A misread that would put the vehicle above
+250 km/h is dropped. To check what OCR makes of your own footage first:
+
+```bash
+python -m smartroad.survey.overlay_gps drive.mp4 --csv fixes.csv
+```
+
+Positions are interpolated between fixes to each frame's time, and left blank
+where there are none. A coordinate is where the camera was: the road graded
+lies 3-15 m ahead of it.
+
 ## What is actually hard here
 
 **Unit conversion is not a detail.** ASTM's curves were drawn in inch-pound
@@ -248,6 +269,8 @@ smartroad/
   geometry/ipm.py          inverse perspective mapping
   detect/tiled.py          tiled inference with seam-aware merging
   survey/video.py          samples a drive into frames, in-process via OpenCV
+  survey/embedded_gps.py   reads the GPS track a camera recorded into its video
+  survey/overlay_gps.py    reads coordinates a dashcam printed on its frames (OCR)
   data/build_yolo.py       merges four source datasets into one 8-class set
   report/                  self-contained HTML training report, inline SVG
 tools/
